@@ -1,13 +1,13 @@
 //
-//  XCircularBuffer.h
+//  XCCircularBuffer.h
 //  X
 //
 //  Created by vector on 2020/5/31.
 //  Copyright © 2020 haoqi. All rights reserved.
 //
 
-#ifndef XCircularBuffer_h
-#define XCircularBuffer_h
+#ifndef XCCircularBuffer_h
+#define XCCircularBuffer_h
 
 #include "XType.h"
 #include "XAtomic.h"
@@ -27,11 +27,11 @@
 #define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x800000)
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x8000000000000000)
 
-typedef struct __XCircularBufferLocation {
+typedef struct __XCCircularBufferLocation {
     XIndex table: 21;
     XIndex page: 20;
     XIndex item: 23;
-} XCircularBufferLocation;
+} XCCircularBufferLocation;
 
 #else
 
@@ -42,10 +42,10 @@ typedef struct __XCircularBufferLocation {
 
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x80000000)
 
-typedef struct __XCircularBufferLocation {
+typedef struct __XCCircularBufferLocation {
     XIndex page: 12;
     XIndex item: 20;
-} XCircularBufferLocation;
+} XCCircularBufferLocation;
 
 #endif
 
@@ -74,8 +74,8 @@ static inline XIndex __CCCircularBufferGoodCapacity(XIndex capacity) {
 }
 
 
-static inline XCircularBufferLocation XCircularBufferLocationMakeWithIndex(XIndex location) {
-    XCircularBufferLocation result = {};
+static inline XCCircularBufferLocation XCCircularBufferLocationMakeWithIndex(XIndex location) {
+    XCCircularBufferLocation result = {};
 #if CX_TARGET_RT_64_BIT
     result.item = location & X_BUILD_UInt(0x7FFFFF);
     result.page = (location >> 23) & X_BUILD_UInt(0x7FFFFF);
@@ -87,7 +87,7 @@ static inline XCircularBufferLocation XCircularBufferLocationMakeWithIndex(XInde
     return result;
 }
 
-static inline XIndex XCircularBufferLocationToIndex(XCircularBufferLocation location) {
+static inline XIndex XCCircularBufferLocationToIndex(XCCircularBufferLocation location) {
     XIndex loc = 0;
 #if CX_TARGET_RT_64_BIT
     loc += location.table;
@@ -104,23 +104,23 @@ static inline XIndex XCircularBufferLocationToIndex(XCircularBufferLocation loca
 }
 
 
-typedef struct __XCircularBufferPage {
+typedef struct __XCCircularBufferPage {
     XUInt8 items[sizeof(XUInt)];
-} XCircularBufferPage_s;
+} XCCircularBufferPage_s;
 
-typedef struct __XCircularBufferPageTable {
-    XCircularBufferPage_s * _Nullable pages[X_BUILD_CircularBufferTableCapacity];
-} XCircularBufferPageTable_s;
+typedef struct __XCCircularBufferPageTable {
+    XCCircularBufferPage_s * _Nullable pages[X_BUILD_CircularBufferTableCapacity];
+} XCCircularBufferPageTable_s;
 
 #if CX_TARGET_RT_64_BIT
-typedef struct __XCircularBufferPageTableList {
-    XCircularBufferPageTable_s * _Nullable tables[X_BUILD_CircularBufferTableCapacity];
-} XCircularBufferPageTableList_s;
+typedef struct __XCCircularBufferPageTableList {
+    XCCircularBufferPageTable_s * _Nullable tables[X_BUILD_CircularBufferTableCapacity];
+} XCCircularBufferPageTableList_s;
 #endif
 
 //_storage 采用多维数组，减少内存抖动
 
-typedef struct __XCircularBuffer {
+typedef struct __XCCircularBuffer {
     _Atomic(XFastUInt) _counter;
     XIndex id;
     XIndex _elementSize;
@@ -134,6 +134,6 @@ typedef struct __XCircularBuffer {
     XIndex _offset;
     XIndex _count;
     XPtr _Nullable _storage[8];
-} XCircularBuffer_s;
+} XCCircularBuffer_s;
 
-#endif /* XCircularBuffer_h */
+#endif /* XCCircularBuffer_h */
