@@ -132,4 +132,14 @@ typedef struct __XCCircularBuffer {
     XPtr _Nullable _storage;
 } XCCircularBuffer_s;
 
+typedef struct __XCPageTable {
+    XIndex maxCapacity;
+    XIndex _capacity;
+    XIndex _offset;
+    XPtr _Nullable _storage;
+} XCPageTable_s;
+
+XPtr _Nonnull XCPageTablePageAtIndex(XCPageTable_s * _Nonnull table)
+    
+    
 #endif /* XCCircularBuffer_h */
