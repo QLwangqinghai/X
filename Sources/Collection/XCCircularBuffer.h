@@ -9,12 +9,11 @@
 #ifndef XCCircularBuffer_h
 #define XCCircularBuffer_h
 
-#include "XType.h"
-#include "XAtomic.h"
+#include "XCollectionBase.h"
 
 /*
- 32位下 最多2维数组 3-10-18 Tables-Pages-Items
- 64位下 最多3维数组 3-20-20-20 Pool-Tables-Pages-Items
+ 32位下 最多2维数组 13-18 Pages-Items
+ 64位下 最多3维数组 23-20-20 Pool-Tables-Pages-Items
  */
 
 #if CX_TARGET_RT_64_BIT
@@ -118,20 +117,19 @@ typedef struct __XCCircularBufferPageTableList {
 
 //_storage 采用多维数组，减少内存抖动
 
-typedef struct __XCCircularBuffer {
-    _Atomic(XFastUInt) _counter;
-    XIndex id;
-    XIndex _elementSize;
+typedef struct __XCBuffer {
+    XIndex deep: 3;
+    XIndex count: (XUIntBitsCount - 3);
+    XPtr _Nullable items[0];
+} XCBuffer_s;
 
-    XIndex _pageSize;
-    XIndex _pageTableSize;
-    XIndex _tableListSize;
     
-    XIndex _deep;
+typedef struct __XCCircularBuffer {
+    XCBase_s _base;
+    XIndex maxCapacity;
     XIndex _capacity;
     XIndex _offset;
-    XIndex _count;
-    XPtr _Nullable _storage[8];
+    XPtr _Nullable _storage;
 } XCCircularBuffer_s;
 
 #endif /* XCCircularBuffer_h */
