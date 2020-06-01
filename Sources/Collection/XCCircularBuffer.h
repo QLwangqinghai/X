@@ -13,9 +13,8 @@
 #include "XAtomic.h"
 
 /*
- 32位下 最多2维数组 3-8-20 Tables-Pages-Items
+ 32位下 最多2维数组 3-10-18 Tables-Pages-Items
  64位下 最多3维数组 3-20-20-20 Pool-Tables-Pages-Items
- 
  */
 
 #if CX_TARGET_RT_64_BIT
@@ -28,6 +27,7 @@
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x8000000000000000)
 
 typedef struct __XCCircularBufferLocation {
+    XIndex pool: 3;
     XIndex table: 21;
     XIndex page: 20;
     XIndex item: 23;
@@ -35,11 +35,9 @@ typedef struct __XCCircularBufferLocation {
 
 #else
 
-#define X_BUILD_CircularBufferTableCapacity X_BUILD_UInt(0x800)
-
+#define X_BUILD_CircularBufferTableCapacity X_BUILD_UInt(0x400)
 //1mb个
-#define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x100000)
-
+#define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x40000)
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x80000000)
 
 typedef struct __XCCircularBufferLocation {
@@ -49,7 +47,7 @@ typedef struct __XCCircularBufferLocation {
 
 #endif
 
-static inline XIndex __CCCircularBufferGoodCapacity(XIndex capacity) {
+static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
     
 #if CX_TARGET_RT_64_BIT
     if (capacity > X_BUILD_CircularBufferPageCapacity * X_BUILD_CircularBufferTableCapacity) {
