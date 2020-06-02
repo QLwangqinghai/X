@@ -164,7 +164,13 @@ static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTabl
         }
         return result;
     } else {
-        if (location < table->count - location) {
+        XIndex right = 0;
+        right = table->capacity - table->offset;
+        if (right > table->count) {
+            right = table->count;
+        }
+        XIndex left = table->count - right;
+        if (left < right) {
             //移动前半部分
             if (table->offset >= location) {
                 table->offset -= location;
@@ -176,15 +182,21 @@ static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTabl
             for (XIndex idx=0; idx<location; idx++) {
                 __XCCircularBufferPageTableSet(table, idx, __XCCircularBufferPageTableGet(table, idx+length));
             }
+            for (XIndex idx=location; idx<location+length; idx++) {
+                __XCCircularBufferPageTableSet(table, idx, NULL);
+            }
         } else {
             //移动后半部分
-
             XIndex oldCount = table->count;
             XIndex moveCount = table->count - location;
             table->count += length;
 
             for (XIndex idx=oldCount-1; idx<moveCount; idx++) {
                 __XCCircularBufferPageTableSet(table, idx, __XCCircularBufferPageTableGet(table, idx+location));
+            }
+            
+            for (XIndex idx=location; idx<location+length; idx++) {
+                __XCCircularBufferPageTableSet(table, idx, NULL);
             }
         }
         
