@@ -13,7 +13,6 @@ extern "C" {
 #endif
 
 #include "XType.h"
-#include <stdlib.h>
 
 
 #if CX_TARGET_OS_WINDOWS
