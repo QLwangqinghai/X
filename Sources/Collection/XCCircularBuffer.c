@@ -54,6 +54,15 @@ static inline XIndex __XCCircularBufferPageTableGoodCapacity(XIndex capacity) {
     return result;
 }
 
+static inline XPtr _Nonnull __XCCircularBufferPageCreate(XIndex elementSize, XIndex capacity) {
+    XCCircularBufferPageTable_s * newTable = XAlignedAllocate(elementSize * capacity, 64);
+    assert(newTable);
+    newTable->capacity = capacity;
+    newTable->count = 0;
+    newTable->offset = 0;
+    memset(&(newTable->pages[0]), 0, sizeof(XPtr) * capacity);
+    return newTable;
+}
 
 static inline XCCircularBufferPageTable_s * _Nonnull __XCCircularBufferPageTableCreate(XIndex capacity) {
     XCCircularBufferPageTable_s * newTable = XAlignedAllocate(sizeof(XCCircularBufferPageTable_s) + sizeof(XPtr) * capacity, 64);
@@ -144,6 +153,8 @@ static inline void __XCCircularBufferPageTableAdd(XCCircularBufferPageTable_s * 
     table->count += 1;
 }
 
+//0 < length
+//0 <= location <= table->count
 static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableInsert(XCCircularBufferPageTable_s * _Nonnull table, XIndex location, XIndex length) {
     if (length <= 0) {
         return NULL;
@@ -164,76 +175,74 @@ static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTabl
         }
         return result;
     } else {
-        XIndex right = 0;
-        right = table->capacity - table->offset;
-        if (right > table->count) {
-            right = table->count;
-        }
-        XIndex left = table->count - right;
+        XIndex right = table->count - location;
+        XIndex left = location;
         if (left < right) {
-            //移动前半部分
-            if (table->offset >= location) {
-                table->offset -= location;
+            //移动前半部分, 前翻
+            if (table->offset >= length) {
+                table->offset -= length;
             } else {
                 table->offset = table->offset + table->capacity - length;
             }
             table->count += length;
 
-            for (XIndex idx=0; idx<location; idx++) {
+            for (XIndex idx=0; idx<left; idx++) {
                 __XCCircularBufferPageTableSet(table, idx, __XCCircularBufferPageTableGet(table, idx+length));
             }
-            for (XIndex idx=location; idx<location+length; idx++) {
+            for (XIndex idx=left; idx<left+length; idx++) {
                 __XCCircularBufferPageTableSet(table, idx, NULL);
             }
         } else {
-            //移动后半部分
+            //移动后半部分, 后翻
             XIndex oldCount = table->count;
-            XIndex moveCount = table->count - location;
             table->count += length;
 
-            for (XIndex idx=oldCount-1; idx<moveCount; idx++) {
-                __XCCircularBufferPageTableSet(table, idx, __XCCircularBufferPageTableGet(table, idx+location));
+            for (XIndex offset=1; offset<=right; offset++) {
+                __XCCircularBufferPageTableSet(table, table->count - offset, __XCCircularBufferPageTableGet(table, oldCount - offset));
             }
-            
-            for (XIndex idx=location; idx<location+length; idx++) {
+            for (XIndex idx=left; idx<left+length; idx++) {
                 __XCCircularBufferPageTableSet(table, idx, NULL);
             }
         }
-        
         return NULL;
     }
-    
-    XAssert(table->count < table->capacity, __func__, "");
-    if (table->count == 0) {
-        table->offset = 0;
-        table->pages[0] = item;
-        table->count += 1;
-    } else {
-        if (table->offset > 0) {
-            table->offset -= 1;
-        } else {
-            table->offset = table->capacity - 1;
-        }
-        table->pages[table->offset] = item;
-        table->count += 1;
-    }
-    
 }
-static inline void __XCCircularBufferPageTableRemove(XCCircularBufferPageTable_s * _Nonnull table, XIndex location, XIndex length) {
-    XAssert(table->count < table->capacity, __func__, "");
-    if (table->count == 0) {
-        table->offset = 0;
-        table->pages[0] = item;
-        table->count += 1;
-    } else {
-        if (table->offset > 0) {
-            table->offset -= 1;
-        } else {
-            table->offset = table->capacity - 1;
+
+//0 < length <= table->count
+//0 < length + location <= table->count
+static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableRemove(XCCircularBufferPageTable_s * _Nonnull table, XIndex location, XIndex length) {
+    XIndex count = table->count - length;
+    XIndex capacity = __XCCircularBufferGoodCapacity(count);
+    if (capacity < table->capacity) {
+        //缩容
+        XCCircularBufferPageTable_s * result = __XCCircularBufferPageTableCreate(capacity);
+        for (XIndex idx=0; idx<location; idx++) {
+            __XCCircularBufferPageTableAdd(result, __XCCircularBufferPageTableGet(table, idx));
         }
-        table->pages[table->offset] = item;
-        table->count += 1;
+        for (XIndex idx=location+length; idx<table->count; idx++) {
+            __XCCircularBufferPageTableAdd(result, __XCCircularBufferPageTableGet(table, idx));
+        }
+        return result;
+    } else {
+        XIndex right = table->count - location - length;
+        XIndex left = location;
+        if (left < right) {
+            //移动前半部分, 后翻 location-offset => location + length - offset
+            for (XIndex offset=1; offset<=left; offset++) {
+                __XCCircularBufferPageTableSet(table, location + length - offset, __XCCircularBufferPageTableGet(table, location-offset));
+            }
+            table->offset = (table->offset + length) % table->capacity;
+            table->count -= length;
+        } else {
+            //移动后半部分, 前翻 location+length+offset => location+offset
+            for (XIndex offset=0; offset<=right; offset++) {
+                __XCCircularBufferPageTableSet(table, location+offset, __XCCircularBufferPageTableGet(table, location+length+offset));
+            }
+            table->count -= length;
+        }
+        return NULL;
     }
+
 }
 static inline XIndex __XCCircularBufferPageTablePrepend(XCCircularBufferPageTable_s * _Nonnull table, XPtr item) {
     XAssert(table->count < table->capacity, __func__, "");
@@ -346,20 +355,91 @@ static inline void _XCCircularBufferEnumerate(XCArrayPtr * _Nonnull array, XRang
     
 }
 
-static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
-    if (location < buffer->_base.count - location) {
-        //移动前半部分
-        
-    } else {
-        //移动后半部分
 
+//在location位置， 插入length
+
+//0 < length
+//0 <= location <= table->_base.count
+static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
+    
+    XIndex capacity = __XCCircularBufferGoodCapacity(buffer->_base.count + length);
+    
+    //优先处理 1维 => 1维 1维 => 2维
+    if (capacity > buffer->_capacity) {
+        //拓容
+        if (buffer->_capacity <= X_BUILD_CircularBufferPageCapacity && capacity > X_BUILD_CircularBufferPageCapacity) {
+            //1维 => 2维
+            
+            return;
+        } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+            //1维 => 1维
+            
+            return;
+        } else {
+            //2维 => 2维
+            
+            if (length % X_BUILD_CircularBufferPageCapacity == 0) {
+                //length 是整数页
+                
+                //找到location所在的页
+                
+                
+                //页拆分
+                
+                
+                //插入页
+                
+                
+                return;
+            } else {
+                //拓容
+                
+                
+                //继续 进入移动
+            }
+        }
+    }
+    
+    //移动
+    if (length % X_BUILD_CircularBufferPageCapacity == 0) {
+        if (location < buffer->_base.count - location) {
+            //移动前半部分
+            
+        } else {
+            //移动后半部分
+
+        }
+    } else {
+        if (location < buffer->_base.count - location) {
+            //移动前半部分
+            
+        } else {
+            //移动后半部分
+
+        }
     }
 }
 
 
+//从location开始删除length个
+
+//0 < length <= table->_base.count
+//0 < length + location <= table->_base.count
 static inline void __XCCircularBufferResizeByRemove(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
+    
+    
+    //降维
 
     
+    
+    if (length % X_BUILD_CircularBufferPageCapacity == 0) {
+        
+        
+        
+    } else {
+
+        
+    }
 }
 
 
@@ -399,283 +479,6 @@ void XCCircularBufferReplace(XCCircularBuffer_s * _Nonnull buffer, XCArrayPtr _N
     
     //insert
     
-    
-    if (range.length > 0) {
-        //replace
-        
-    } else {
-        if (itemsCount > 0) {
-            //remove + insert
-
-        } else {
-            //remove
-        }
-    }
-    
-    
-    if (itemsCount > 0) {
-        assert(items);
-    } else {
-        if (autoResize) {
-            //尝试缩容
-            if (buffer->_count > bufferElementCapacity) {
-
-            } else {
-                size_t size = buffer->_count * elementSize;
-                int itr = 0;
-                CCIndex capacity = 0;
-                for (itr = 0; itr<__CCCircularBufferSizeCount; itr++) {
-                    if (size <= __CCCircularBufferSizes[itr]) {
-                        size = __CCCircularBufferSizes[itr];
-                        capacity = __CCCircularBufferSizes[itr] / buffer->_elementSize;
-                        break;
-                    }
-                }
-                if (buffer->_capacity < buffer->_bufferElementCapacity) {
-                    if (capacity != 0) {
-                        uint8_t * old = buffer->_storage;
-                        assert(old);
-                        uint8_t * ptr = CCAllocate(size);
-                        if (buffer->_capacity <= bufferElementCapacity) {
-                            CCIndex rLength = buffer->_capacity - buffer->_indexOffset;
-                            if (rLength > buffer->_count) {
-                                rLength = buffer->_count;
-                            }
-                            size_t rSize = elementSize * rLength;
-                            memcpy(ptr, old + buffer->_indexOffset * elementSize, rSize);
-                            if (rLength < buffer->_count) {
-                                memcpy(ptr + rSize, old, elementSize * (buffer->_count - rLength));
-                            }
-                            __CCCircularBufferResetStorage(buffer, ptr, capacity, 0);
-                            CCDeallocate(old);
-                        } else {
-                            
-                            
-                        }
-                    }
-                    
-                    
-                } else {
-                    
-                    
-                }
-                void * old = buffer->_storage;
-                assert(old);
-                uint8_t * ptr = CCAllocate(size);
-
-   
-                assert(itr != __CCCircularBufferSizeCount);
-                if (capacity != buffer->_capacity) {
-                    assert(capacity < buffer->_capacity);
-                    
-                    if (buffer->_capacity < buffer->_bufferElementCapacity) {
-                        if (capacity != 0) {
-                            uint8_t * old = buffer->_storage;
-                            assert(old);
-                            uint8_t * ptr = CCAllocate(size);
-                            if (buffer->_capacity <= bufferElementCapacity) {
-                                CCIndex rLength = buffer->_capacity - buffer->_indexOffset;
-                                if (rLength > buffer->_count) {
-                                    rLength = buffer->_count;
-                                }
-                                size_t rSize = elementSize * rLength;
-                                memcpy(ptr, old + buffer->_indexOffset * elementSize, rSize);
-                                if (rLength < buffer->_count) {
-                                    memcpy(ptr + rSize, old, elementSize * (buffer->_count - rLength));
-                                }
-                                __CCCircularBufferResetStorage(buffer, ptr, capacity, 0);
-                                CCDeallocate(old);
-                            } else {
-                                
-                                
-                            }
-                        }
-                        
-                        
-                    } else {
-                        
-                        
-                    }
-                    
-                    //缩容
-                    if (capacity == 0) {
-                        //释放全部空间
-                        
-                    } else {
-                        if (buffer->_capacity < buffer->_bufferElementCapacity) {
-                            
-                            
-                            
-                            
-                        } else {
-                            
-                            
-                        }
-                        uint8_t * ptr = CCAllocate(size);
-                        CCIndex idx = __CCCircularBufferLoactionToIndex(buffer, 0);
-                        
-                        memcpy(ptr, <#const void *__src#>, <#size_t __n#>)
-                        
-                        
-                        
-                        
-                        
-                    }
-                }
-            }
-        }
-        return;
-    }
-    
-    CCIndex offset = 0;
-    CCRange range = {};//最大的不动的区间
-    CCIndex removedCount = 0;
-    CCIndex insertedCount = 0;
-    
-    for (CCIndex i=0; i<itemsCount; i++) {
-        CCRangeReplace item = items[i];
-        assert(item.range.location >= offset);
-        CCIndex length = range.location - offset;
-        if (length > range.length) {
-            range.location = offset;
-            range.length = length;
-        }
-        offset = item.range.location + item.range.length;
-        if (item.newLength > 0) {
-            assert(item.newValues);
-        }
-        removedCount += item.range.length;
-        insertedCount += item.newLength;
-    }
-    assert(offset <= buffer->_count);
-    
-    CCIndex newCount = buffer->_count - removedCount + insertedCount;
-    assert(newCount <= buffer->_capacity && !resize);
-    do {
-        CCRangeReplace item = items[itemsCount-1];
-        CCIndex end = item.range.location + item.range.length;
-        if (end < buffer->_count) {
-            CCIndex length = buffer->_count - end;
-            if (length > range.length) {
-                range.location = end;
-                range.length = length;
-            }
-        }
-    } while (false);
-    
-    if (buffer->_count == 0) {
-        buffer->_indexOffset = 0;
-    }
-//
-//    //        CCIndex loc = __CCCircularBufferIndexToLoaction(<#CCCircularBuffer_s * _Nonnull buffer#>, <#CCIndex index#>)
-//
-//    else if (newCount == 0) {
-//        //remove all
-//
-//
-//    } else {
-//
-//    }
-//
-    if (onRemove) {
-        for (CCIndex i=0; i<itemsCount; i++) {
-            CCRangeReplace item = items[i];
-            
-            
-            
-        }
-    }
-    
-    uint32_t elementSize = buffer->_elementSize;
-    uint64_t count = 0;
-    for (int32_t vi=0; vi<newVectorCount; vi++) {
-        CCVector_s v = newVectors[vi];
-        count += v.count;
-    }
-    
-    assert(count <= CCCountLimit);
-    uint32_t newCount = (uint32_t)count;
-
-    uint32_t capacity = buffer->_count - range.length + newCount;
-    if (capacity > buffer->_capacity) {//拓容
-        uint32_t realCapacity = __CCCircularBufferGoodCapacity(capacity);
-        assert(realCapacity <= CCCountLimit);
-        assert(capacity <= CCCountLimit);
-        uint64_t elementsSize = (uint64_t)elementSize * (uint64_t)realCapacity;
-        assert(elementSize <= CCCircularBufferElementsSizeLimit);
-        
-        CCCircularBuffer_s * result = CCAllocate(elementsSize + sizeof(CCCircularBuffer_s));
-        
-        result->_capacity = realCapacity;
-        result->_elementSize = elementSize;
-        result->_indexOffset = 0;
-        result->_count = capacity;
-        
-        CCVector_s tVec[2] = {};
-        int32_t tVecCount = __CCCircularBufferGetItemsInRange(buffer, CCRangeMake(0, range.location), tVec);
-        uint32_t index = 0;
-        for (int32_t vi=0; vi<tVecCount; vi++) {
-            CCVector_s v = tVec[vi];
-            ___CCCircularBufferSetValues(result, index, v);
-            index += v.count;
-        }
-        
-        for (int32_t vi=0; vi<newVectorCount; vi++) {
-            CCVector_s v = newVectors[vi];
-            ___CCCircularBufferSetValues(result, index, v);
-            index += v.count;
-        }
-        
-        tVecCount = __CCCircularBufferGetItemsInRange(buffer, CCRangeMake(range.location + newCount, capacity - range.location - newCount), tVec);
-        for (int32_t vi=0; vi<tVecCount; vi++) {
-            CCVector_s v = tVec[vi];
-            ___CCCircularBufferSetValues(result, index, v);
-            index += v.count;
-        }
-        
-        CCDeallocate(buffer);
-        return result;
-    } else {
-        if (range.length == newCount) {
-            uint32_t index = range.location;
-            for (int32_t vi=0; vi<newVectorCount; vi++) {
-                CCVector_s v = newVectors[vi];
-                ___CCCircularBufferSetValues(buffer, index, v);
-                index += v.count;
-            }
-        } else {
-            uint32_t rightCount = buffer->_count - range.location - range.length;
-            int32_t countChanged = (int32_t)newCount - (int32_t)range.length;
-            if (range.location < rightCount) {//移动首部
-                int32_t offset = - countChanged;
-                if (offset < 0) {//前移
-                    ___CCCircularBufferMoveIndexOffset(buffer, offset);
-                    buffer->_count = capacity;
-                    ___CCCircularBufferMoveValues(buffer, CCRangeMake(countChanged, range.location), offset);
-                } else {//后移
-                    ___CCCircularBufferMoveValues(buffer, CCRangeMake(0, range.location), offset);
-                    ___CCCircularBufferMoveIndexOffset(buffer, offset);
-                    buffer->_count = capacity;
-                }
-            } else {//移动尾部
-                int32_t offset = countChanged;
-                if (offset < 0) {//前移
-                    ___CCCircularBufferMoveValues(buffer, CCRangeMake(range.location + range.length, rightCount), offset);
-                    buffer->_count = capacity;
-                } else {//后移
-                    buffer->_count = capacity;
-                    ___CCCircularBufferMoveValues(buffer, CCRangeMake(range.location + range.length, rightCount), offset);
-                }
-            }
-            uint32_t index = range.location;
-            for (int32_t vi=0; vi<newVectorCount; vi++) {
-                CCVector_s v = newVectors[vi];
-                ___CCCircularBufferSetValues(buffer, index, v);
-                index += v.count;
-            }
-        }
-        return buffer;
-    }
 }
 
 
