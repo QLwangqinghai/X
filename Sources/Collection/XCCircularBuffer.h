@@ -20,33 +20,48 @@
 
 //#define X_BUILD_CircularBufferTableCapacityShift X_BUILD_UInt(20)
 
-//8mb个
-#define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x1000000)
+//2m
+#define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x200000)
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x8000000000000000)
 
-typedef struct __XCCircularBufferLocation {
-    XIndex page: 40;
-    XIndex item: 24;
-} XCCircularBufferLocation;
+typedef struct __XCCircularBufferIndex {
+    XIndex page: 43;
+    XIndex item: 21;
+} XCCircularBufferIndex;
 
 #else
 
-//1mb个
+//256k
 #define X_BUILD_CircularBufferPageCapacity X_BUILD_UInt(0x40000)
 #define X_BUILD_CircularBufferCapacityMax X_BUILD_UInt(0x80000000)
 
-typedef struct __XCCircularBufferLocation {
+typedef struct __XCCircularBufferIndex {
     XIndex page: 14;
     XIndex item: 18;
-} XCCircularBufferLocation;
+} XCCircularBufferIndex;
 
 #endif
 
+//static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
+//    if (capacity >= X_BUILD_CircularBufferCapacityMax) {
+//        return X_BUILD_CircularBufferCapacityMax;
+//    } else if (capacity >= X_BUILD_CircularBufferPageCapacity) {
+//        return (capacity + X_BUILD_CircularBufferPageCapacity - 1) & (~(X_BUILD_CircularBufferPageCapacity - 1));
+//    } else {
+//        if (capacity <= 0) {
+//            return 0;
+//        } else {
+//            XIndex result = 8;
+//            while (result < capacity) {
+//                result = result << 1;
+//            }
+//            return result;
+//        }
+//    }
+//}
 static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
-    if (capacity >= X_BUILD_CircularBufferCapacityMax) {
+    if (capacity > X_BUILD_CircularBufferPageCapacity) {
         return X_BUILD_CircularBufferCapacityMax;
-    } else if (capacity >= X_BUILD_CircularBufferPageCapacity) {
-        return (capacity + X_BUILD_CircularBufferPageCapacity - 1) & (~(X_BUILD_CircularBufferPageCapacity - 1));
     } else {
         if (capacity <= 0) {
             return 0;
@@ -61,11 +76,18 @@ static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
 }
 
 
-static inline XCCircularBufferLocation XCCircularBufferLocationMakeWithIndex(XIndex location) {
-    XCCircularBufferLocation result = {};
+static inline XCCircularBufferIndex XCCircularBufferIndexMake(XIndex item, XIndex page) {
+    XCCircularBufferIndex result = {};
+    result.item = item;
+    result.page = page;
+    return result;
+}
+
+static inline XCCircularBufferIndex XCCircularBufferIndexMakeWithIndex(XIndex location) {
+    XCCircularBufferIndex result = {};
 #if CX_TARGET_RT_64_BIT
     result.item = location & X_BUILD_UInt(0xFFFFFF);
-    result.page = (location >> 24);
+    result.page = (location >> 21);
 #else
     result.item = location & X_BUILD_UInt(0x3FFFF);
     result.page = (location >> 18);
@@ -73,11 +95,11 @@ static inline XCCircularBufferLocation XCCircularBufferLocationMakeWithIndex(XIn
     return result;
 }
 
-static inline XIndex XCCircularBufferLocationToIndex(XCCircularBufferLocation location) {
+static inline XIndex XCCircularBufferIndexToIndex(XCCircularBufferIndex location) {
     XIndex loc = 0;
 #if CX_TARGET_RT_64_BIT
     loc += location.page;
-    loc = loc << 24;
+    loc = loc << 21;
     loc += location.item;
 #else
     loc += location.page;
@@ -96,10 +118,12 @@ typedef struct __XCBuffer {
 
 typedef struct __XCCircularBuffer {
     XCArray_s _base;
-    XIndex _deep;
     XIndex maxCapacity;
     XIndex _capacity;
     XIndex _offset;
+    
+    XCCircularBufferIndex capacity;
+    XCCircularBufferIndex offset;
     XPtr _Nullable _storage;
 } XCCircularBuffer_s;
 

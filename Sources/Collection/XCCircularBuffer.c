@@ -10,7 +10,6 @@
 #include "XMemory.h"
 
 /*
- 8-3
  16-3
  .....
  1024-3
@@ -308,24 +307,7 @@ static inline XPtr __XCCircularBufferPageTableRemoveLast(XCCircularBufferPageTab
     return result;
 }
 
-
-//static inline XCCircularBufferPage_s * _Nonnull _XCCircularBufferPageCreate(XIndex count) {
-//    return XAlignedAllocate(sizeof(XCCircularBufferPage_s), 64);
-//}
-//
-//static inline XCCircularBufferPageTable_s * _Nonnull _XCCircularBufferPageTableCreate(void) {
-//    return XAlignedAllocate(sizeof(XCCircularBufferPageTable_s), 64);
-//}
-//
-//#if CX_TARGET_RT_64_BIT
-//static inline XCCircularBufferPageTableList_s * _Nonnull _XCCircularBufferPageTableListCreate(void) {
-//    return XAlignedAllocate(sizeof(XCCircularBufferPageTableList_s), 64);
-//}
-//#endif
-
-
-
-static inline XCCircularBufferLocation __XCCircularBufferLoactionOfIndex(XCCircularBuffer_s * _Nonnull buffer, XIndex index) {
+static inline XCCircularBufferIndex __XCCircularBufferLoactionOfIndex(XCCircularBuffer_s * _Nonnull buffer, XIndex index) {
     XIndex r = buffer->_capacity - buffer->_offset;
     XIndex location = 0;
     if (index >= r) {
@@ -333,11 +315,11 @@ static inline XCCircularBufferLocation __XCCircularBufferLoactionOfIndex(XCCircu
     } else {
         location = index + buffer->_offset;
     }
-    return XCCircularBufferLocationMakeWithIndex(location);
+    return XCCircularBufferIndexMakeWithIndex(location);
 }
 
-static inline XIndex __XCCircularBufferIndexOfLoaction(XCCircularBuffer_s * _Nonnull buffer, XCCircularBufferLocation location) {
-    XIndex loc = XCCircularBufferLocationToIndex(location);
+static inline XIndex __XCCircularBufferIndexOfLoaction(XCCircularBuffer_s * _Nonnull buffer, XCCircularBufferIndex location) {
+    XIndex loc = XCCircularBufferIndexToIndex(location);
     if (loc >= buffer->_offset) {
         return loc - buffer->_offset;
     } else {
@@ -385,7 +367,7 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
                 
                 
                 //页拆分
-                
+
                 
                 //插入页
                 
