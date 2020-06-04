@@ -42,7 +42,7 @@ XIndex XCArrayGetElementSize(XCArrayPtr _Nonnull array);
 typedef void (*XCArrayEnumerateCallBack_f)(XPtr _Nullable context, XRange range, size_t elementSize, const void * _Nonnull values, XBool * _Nonnull stop);
 
 void XCArrayEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func);
-
+void XCArrayReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func);
 
 
 

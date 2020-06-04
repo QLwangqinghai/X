@@ -42,39 +42,6 @@ typedef struct __XCCircularBufferIndex {
 
 #endif
 
-//static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
-//    if (capacity >= X_BUILD_CircularBufferCapacityMax) {
-//        return X_BUILD_CircularBufferCapacityMax;
-//    } else if (capacity >= X_BUILD_CircularBufferPageCapacity) {
-//        return (capacity + X_BUILD_CircularBufferPageCapacity - 1) & (~(X_BUILD_CircularBufferPageCapacity - 1));
-//    } else {
-//        if (capacity <= 0) {
-//            return 0;
-//        } else {
-//            XIndex result = 8;
-//            while (result < capacity) {
-//                result = result << 1;
-//            }
-//            return result;
-//        }
-//    }
-//}
-static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
-    if (capacity > X_BUILD_CircularBufferPageCapacity) {
-        return X_BUILD_CircularBufferCapacityMax;
-    } else {
-        if (capacity <= 0) {
-            return 0;
-        } else {
-            XIndex result = 8;
-            while (result < capacity) {
-                result = result << 1;
-            }
-            return result;
-        }
-    }
-}
-
 
 static inline XCCircularBufferIndex XCCircularBufferIndexMake(XIndex item, XIndex page) {
     XCCircularBufferIndex result = {};
@@ -109,6 +76,66 @@ static inline XIndex XCCircularBufferIndexToIndex(XCCircularBufferIndex location
     return loc;
 }
 
+static inline XCCircularBufferIndex __XCCircularBufferAlignedCapacity(XIndex capacity) {
+    XCCircularBufferIndex result = {};
+    if (capacity >= X_BUILD_CircularBufferCapacityMax) {
+        result.page = (X_BUILD_CircularBufferCapacityMax / X_BUILD_CircularBufferPageCapacity);
+    } else if (capacity > X_BUILD_CircularBufferPageCapacity / 2) {
+        result.page = (capacity + X_BUILD_CircularBufferPageCapacity - 1) / X_BUILD_CircularBufferPageCapacity;
+    } else {
+        if (capacity > 0) {
+            XIndex cc = 8;
+            while (cc < capacity) {
+                cc = cc << 1;
+            }
+            result.item = cc;
+        }
+    }
+    return result;
+}
+
+static inline XBool __XCCircularBufferNeedExpansion(XCCircularBufferIndex current, XCCircularBufferIndex aligned) {
+    if (aligned.page < current.page) {
+        return false;
+    }
+    
+    return false;
+}
+
+static inline XBool __XCCircularBufferNeedReduction(XCCircularBufferIndex current, XCCircularBufferIndex aligned) {
+
+    return false;
+}
+
+
+static inline XIndex __XCCircularBufferPageLevelOfCapacity(XIndex capacity) {
+    if (capacity == 0) {
+        return 0;
+    } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+        return 1;
+    } else {
+        return 2;
+    }
+}
+
+static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
+    if (capacity > X_BUILD_CircularBufferPageCapacity) {
+        return X_BUILD_CircularBufferCapacityMax;
+    } else {
+        if (capacity <= 0) {
+            return 0;
+        } else {
+            XIndex result = 8;
+            while (result < capacity) {
+                result = result << 1;
+            }
+            return result;
+        }
+    }
+}
+
+
+
 
 typedef struct __XCBuffer {
     XIndex deep: 3;
@@ -121,8 +148,10 @@ typedef struct __XCCircularBuffer {
     XIndex maxCapacity;
     XIndex _capacity;
     XIndex _offset;
-    
-    XCCircularBufferIndex capacity;
+
+    //capacity.page > 1 时，_storage 存储page， pageCount是个有效值，否则 _storage 存储item
+    XIndex pageCapacity;
+    XIndex capacity;
     XCCircularBufferIndex offset;
     XPtr _Nullable _storage;
 } XCCircularBuffer_s;

@@ -25,6 +25,9 @@ XIndex XCArrayGetElementSize(XCArrayPtr _Nonnull ptr) {
     return array->elementSize;
 }
 
+void XCArrayReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func) {
+    
+}
 
 
 void XCArrayEnumerate(XCArrayPtr _Nonnull ptr, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func) {
