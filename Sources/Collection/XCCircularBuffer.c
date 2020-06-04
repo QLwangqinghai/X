@@ -362,22 +362,47 @@ void _XCCircularBufferReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, 
 //0 <= location <= table->_base.count
 static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
     
-    XCCircularBufferIndex capacity = __XCCircularBufferAlignedCapacity(buffer->_base.count + length);
+    XIndex capacity = __XCCircularBufferGoodCapacity(buffer->_base.count + length);
     
     //优先处理 1维 => 1维 1维 => 2维
-    if (__XCCircularBufferNeedExpansion(buffer->capacity, capacity)) {
+    if (capacity > buffer->capacity) {
         //拓容
-        if (buffer->_capacity <= X_BUILD_CircularBufferPageCapacity && capacity > X_BUILD_CircularBufferPageCapacity) {
-            //1维 => 2维
-            
+        
+        if (0 == buffer->capacity) {
+            if (capacity > X_BUILD_CircularBufferPageCapacity) {
+                //0维 => 2维
+                
+                
+            } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+                //0维 => 1维
+                
+                
+            } else {
+                //不可能发生
+                abort();
+            }
             return;
-        } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
-            //1维 => 1维
-            
-            return;
+        } else if (buffer->capacity <= X_BUILD_CircularBufferPageCapacity) {
+            if (capacity > X_BUILD_CircularBufferPageCapacity) {
+                //1维 => 2维
+                
+                return;
+            } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+                //1维 => 1维
+                
+                
+            } else {
+                //不可能发生
+                abort();
+            }
         } else {
+            //不可能发生
+            abort();
+        }
+    } else {
+        //移动
+        if (capacity > X_BUILD_CircularBufferPageCapacity) {
             //2维 => 2维
-            
             if (length % X_BUILD_CircularBufferPageCapacity == 0) {
                 //length 是整数页
                 
@@ -392,11 +417,19 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
                 
                 return;
             } else {
-                //拓容
+                //移动
                 
                 
-                //继续 进入移动
+                
             }
+        } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+            //1维 => 1维
+
+            //移动
+
+        } else {
+            //不可能发生
+            abort();
         }
     }
     
@@ -426,20 +459,87 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
 //0 < length <= table->_base.count
 //0 < length + location <= table->_base.count
 static inline void __XCCircularBufferResizeByRemove(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
+    XIndex capacity = __XCCircularBufferGoodCapacity(buffer->_base.count - length);
     
-    
-    //降维
 
-    
-    
-    if (length % X_BUILD_CircularBufferPageCapacity == 0) {
+    //优先处理 1维 => 1维 2维 => 1维
+    if (capacity < buffer->capacity) {
+        //可能需要缩容
         
-        
-        
-    } else {
+        if (0 == capacity) {
+            //缩容
 
-        
+            if (buffer->capacity > X_BUILD_CircularBufferPageCapacity) {
+                //缩容
+                //2维 => 0维
+
+            } else if (buffer->capacity <= X_BUILD_CircularBufferPageCapacity) {
+                //1维 => 0维
+
+
+                
+                
+            }  else {
+                //不可能发生
+                abort();
+            }
+        } else if (capacity < X_BUILD_CircularBufferPageCapacity) {
+            if (buffer->capacity > X_BUILD_CircularBufferPageCapacity) {
+                //缩容
+                //2维 => 1维
+
+            } else {
+                //1维 => 1维
+                goto doMove;
+            }
+        } else if (capacity == X_BUILD_CircularBufferPageCapacity) {
+            if (buffer->_base.count - length <= X_BUILD_CircularBufferPageCapacity * 3 / 4) {
+                //缩容
+                //2维 => 1维
+
+            } else {
+                //暂缓缩容
+                //2维 => 2维
+                goto doMove;
+            }
+        } else {
+            //不可能发生
+            abort();
+        }
     }
+        
+doMove:
+    //移动
+    if (capacity > X_BUILD_CircularBufferPageCapacity) {
+        //2维 => 2维
+        if (length % X_BUILD_CircularBufferPageCapacity == 0) {
+            //length 是整数页
+            
+            //找到location所在的页
+            
+            
+            //页拆分
+
+            
+            //插入页
+            
+            
+            return;
+        } else {
+            //移动
+            
+            
+            
+        }
+    } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
+        //1维 => 1维
+
+        //移动
+
+    } else {
+        //不可能发生
+        abort();
+    };
 }
 
 

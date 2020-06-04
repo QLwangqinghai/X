@@ -149,9 +149,8 @@ typedef struct __XCCircularBuffer {
     XIndex _capacity;
     XIndex _offset;
 
-    //capacity.page > 1 时，_storage 存储page， pageCount是个有效值，否则 _storage 存储item
     XIndex pageCapacity;
-    XIndex capacity;
+    XIndex capacity;// ==0 时 _storage = NULL; <= X_BUILD_CircularBufferPageCapacity时
     XCCircularBufferIndex offset;
     XPtr _Nullable _storage;
 } XCCircularBuffer_s;
