@@ -23,6 +23,11 @@ typedef struct __XCBase {
 } XCBase_s;
 
 
+typedef struct __XCArraySlice {
+    XRange range;
+    XIndex elementSize;
+    XPtr _Nonnull values;
+} XCArraySlice;
 
 typedef struct __XCArray {
     _Atomic(XFastUInt) counter;
@@ -39,7 +44,7 @@ XIndex XCArrayGetCount(XCArrayPtr _Nonnull array);
 XIndex XCArrayGetElementSize(XCArrayPtr _Nonnull array);
 
 
-typedef void (*XCArrayEnumerateCallBack_f)(XPtr _Nullable context, XRange range, size_t elementSize, const void * _Nonnull values, XBool * _Nonnull stop);
+typedef void (*XCArrayEnumerateCallBack_f)(XPtr _Nullable context, XCArraySlice slice, XBool * _Nonnull stop);
 
 void XCArrayEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func);
 void XCArrayReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nullable context, XCArrayEnumerateCallBack_f _Nonnull func);
@@ -53,4 +58,4 @@ void XCArrayReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, void * _Nu
 #endif
 
 
-#endif /* XCollection_h */
+#endif /* XCollectionBase_h */

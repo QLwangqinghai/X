@@ -145,16 +145,11 @@ typedef struct __XCBuffer {
 
 typedef struct __XCCircularBuffer {
     XCArray_s _base;
-    XIndex maxCapacity;
-    XIndex _capacity;
-    XIndex _offset;
-
-    XIndex pageCapacity;
     XIndex capacity;// ==0 时 _storage = NULL; <= X_BUILD_CircularBufferPageCapacity时
     XCCircularBufferIndex offset;
+    XIndex pageCount;
+    XIndex pageCapacity;
     XPtr _Nullable _storage;
 } XCCircularBuffer_s;
-
-    
     
 #endif /* XCCircularBuffer_h */
