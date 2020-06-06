@@ -33,4 +33,11 @@ void XCCCircularBufferMoveBackward(XUInt8 * _Nonnull buffer, XIndex capacity, XI
 void XCCCircularBufferBezero(XUInt8 * _Nonnull buffer, XIndex capacity, XIndex offset, XIndex elementSize, XRange range);
 
 
+/**
+* 把range中的元素后移n
+* 前置条件: dstBuffer!=buffer, range.location + range.length <= capacity,  capacity - (range.location + range.length) >= n
+*/
+void XCCCircularBufferCopy(XUInt8 * _Nonnull dstBuffer, XIndex dstCapacity, XIndex dstOffset, XIndex dstIndex, XUInt8 * _Nonnull buffer, XIndex capacity, XIndex offset, XIndex index, XIndex length, XIndex elementSize);
+
+
 #endif /* XCoreCollection_h */

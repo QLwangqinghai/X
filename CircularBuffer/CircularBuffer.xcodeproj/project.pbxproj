@@ -8,9 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		D66E04E0248A878400B1A91D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04DF248A878400B1A91D /* main.c */; };
-		D66E04F0248AABD200B1A91D /* XType.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04EB248AABD200B1A91D /* XType.c */; };
-		D66E04F1248AABD200B1A91D /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04EF248AABD200B1A91D /* XCoreCollection.c */; };
 		D6F4A3C0248A71F7007923C9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3BF248A71F7007923C9 /* main.m */; };
+		D6F4A3CC248B669F007923C9 /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3CB248B669F007923C9 /* XCoreCollection.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,12 +36,12 @@
 /* Begin PBXFileReference section */
 		D66E04DD248A878400B1A91D /* XCoreCollection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XCoreCollection; sourceTree = BUILT_PRODUCTS_DIR; };
 		D66E04DF248A878400B1A91D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		D66E04EB248AABD200B1A91D /* XType.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XType.c; sourceTree = "<group>"; };
-		D66E04EC248AABD200B1A91D /* XType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XType.h; sourceTree = "<group>"; };
-		D66E04EE248AABD200B1A91D /* XCoreCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCoreCollection.h; sourceTree = "<group>"; };
-		D66E04EF248AABD200B1A91D /* XCoreCollection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCoreCollection.c; sourceTree = "<group>"; };
 		D6F4A3BC248A71F7007923C9 /* CircularBuffer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CircularBuffer; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6F4A3BF248A71F7007923C9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D6F4A3C7248B664B007923C9 /* CXTargetConditionals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXTargetConditionals.h; path = ../../../Sources/CX/include/CXTargetConditionals.h; sourceTree = "<group>"; };
+		D6F4A3C8248B664B007923C9 /* XType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XType.h; path = ../../../Sources/CX/include/XType.h; sourceTree = "<group>"; };
+		D6F4A3CA248B669F007923C9 /* XCoreCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCoreCollection.h; sourceTree = "<group>"; };
+		D6F4A3CB248B669F007923C9 /* XCoreCollection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCoreCollection.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +65,8 @@
 		D66E04DE248A878400B1A91D /* XCoreCollection */ = {
 			isa = PBXGroup;
 			children = (
+				D6F4A3C9248B669F007923C9 /* CoreCollection */,
 				D66E04EA248AABD200B1A91D /* Base */,
-				D66E04ED248AABD200B1A91D /* XCoreCollection */,
 				D66E04DF248A878400B1A91D /* main.c */,
 			);
 			path = XCoreCollection;
@@ -76,19 +75,10 @@
 		D66E04EA248AABD200B1A91D /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				D66E04EB248AABD200B1A91D /* XType.c */,
-				D66E04EC248AABD200B1A91D /* XType.h */,
+				D6F4A3C7248B664B007923C9 /* CXTargetConditionals.h */,
+				D6F4A3C8248B664B007923C9 /* XType.h */,
 			);
 			path = Base;
-			sourceTree = "<group>";
-		};
-		D66E04ED248AABD200B1A91D /* XCoreCollection */ = {
-			isa = PBXGroup;
-			children = (
-				D66E04EE248AABD200B1A91D /* XCoreCollection.h */,
-				D66E04EF248AABD200B1A91D /* XCoreCollection.c */,
-			);
-			path = XCoreCollection;
 			sourceTree = "<group>";
 		};
 		D6F4A3B3248A71F7007923C9 = {
@@ -115,6 +105,16 @@
 				D6F4A3BF248A71F7007923C9 /* main.m */,
 			);
 			path = CircularBuffer;
+			sourceTree = "<group>";
+		};
+		D6F4A3C9248B669F007923C9 /* CoreCollection */ = {
+			isa = PBXGroup;
+			children = (
+				D6F4A3CA248B669F007923C9 /* XCoreCollection.h */,
+				D6F4A3CB248B669F007923C9 /* XCoreCollection.c */,
+			);
+			name = CoreCollection;
+			path = ../../Sources/CX/CoreCollection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,9 +195,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D66E04F0248AABD200B1A91D /* XType.c in Sources */,
-				D66E04F1248AABD200B1A91D /* XCoreCollection.c in Sources */,
 				D66E04E0248A878400B1A91D /* main.c in Sources */,
+				D6F4A3CC248B669F007923C9 /* XCoreCollection.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

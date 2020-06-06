@@ -31,6 +31,7 @@
 		D66C92512483C28B00AEABAF /* XCCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D66C92502483C28B00AEABAF /* XCCircularBuffer.c */; };
 		D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = D681FD7B2456D392001B28EB /* XByteStorage.c */; };
 		D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE08B92463AFBD008854F8 /* CXTester.m */; };
+		D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -94,6 +95,8 @@
 		D681FD7B2456D392001B28EB /* XByteStorage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XByteStorage.c; sourceTree = "<group>"; };
 		D6CE08B82463AFBD008854F8 /* CXTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXTester.h; sourceTree = "<group>"; };
 		D6CE08B92463AFBD008854F8 /* CXTester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXTester.m; sourceTree = "<group>"; };
+		D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCoreCollection.h; sourceTree = "<group>"; };
+		D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCoreCollection.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +167,7 @@
 		D6446FEB244D7261009E4F57 /* CX */ = {
 			isa = PBXGroup;
 			children = (
+				D6F4A3CD248B66BB007923C9 /* CoreCollection */,
 				D66C924E2483C24900AEABAF /* Collection */,
 				D6446FED244D7261009E4F57 /* CXInit.c */,
 				D6446FEC244D7261009E4F57 /* XAllocator.c */,
@@ -248,6 +252,15 @@
 			);
 			name = Collection;
 			path = ../Collection;
+			sourceTree = "<group>";
+		};
+		D6F4A3CD248B66BB007923C9 /* CoreCollection */ = {
+			isa = PBXGroup;
+			children = (
+				D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */,
+				D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */,
+			);
+			path = CoreCollection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -347,6 +360,7 @@
 				D6446FDB244D7254009E4F57 /* ViewController.mm in Sources */,
 				77C7F5CA2476C53D00B7EC3C /* XWeakStorage.c in Sources */,
 				D6447009244D7261009E4F57 /* XMemory.c in Sources */,
+				D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */,
 				77C7F5C724742B4F00B7EC3C /* XClass.c in Sources */,
 				D644700B244D7261009E4F57 /* XType.c in Sources */,
 				D6446FE3244D7256009E4F57 /* main.m in Sources */,

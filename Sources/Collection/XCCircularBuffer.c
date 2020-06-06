@@ -8,15 +8,7 @@
 
 #include "XCCircularBuffer.h"
 #include "XMemory.h"
-
-static inline void __XCMemoryCopy(XPtr _Nonnull dest, const XPtr _Nonnull src, XIndex size) {
-    memmove(dest, src, size);
-}
-
-static inline void __XCCircularBufferPageCopy(XPtr _Nonnull destPage, const XPtr _Nonnull srcPage, XIndex count, XIndex elementSize) {
-    __XCMemoryCopy(destPage, srcPage, count * elementSize);
-}
-
+#include "XCoreCollection.h"
 
 
 /*
@@ -66,7 +58,7 @@ XPtr _Nonnull XCCircularBufferPageTableGetPageAtIndex(XCCircularBufferPageTable_
 
 static inline XIndex __XCCircularBufferPageTableGoodCapacity(XIndex count) {
     assert(count <= X_BUILD_CircularBufferCapacityMax);
-    XIndex capacity = count + 3;
+    XIndex capacity = count;
     XIndex result = 0;
 
     if (capacity >= 1024) {
@@ -79,7 +71,7 @@ static inline XIndex __XCCircularBufferPageTableGoodCapacity(XIndex count) {
             result = result << 1;
         }
     }
-    return result - 3;
+    return result;
 }
 
 static inline XPtr _Nonnull __XCCircularBufferPageCreate(XIndex elementSize, XIndex capacity) {
@@ -92,13 +84,10 @@ static inline XPtr _Nonnull __XCCircularBufferPageCreate(XIndex elementSize, XIn
     return newTable;
 }
 
-static inline XCCircularBufferPageTable_s * _Nonnull __XCCircularBufferPageTableCreate(XIndex capacity) {
-    XCCircularBufferPageTable_s * newTable = XAlignedAllocate(sizeof(XCCircularBufferPageTable_s) + sizeof(XPtr) * capacity, 64);
+static inline XUInt8 * _Nonnull __XCCircularBufferPageTableCreate(XIndex capacity) {
+    XUInt8 * newTable = XAlignedAllocate(sizeof(XPtr) * capacity, 64);
     assert(newTable);
-    newTable->capacity = capacity;
-    newTable->count = 0;
-    newTable->offset = 0;
-    memset(&(newTable->pages[0]), 0, sizeof(XPtr) * capacity);
+    memset(newTable, 0, sizeof(XPtr) * capacity);
     return newTable;
 }
 
@@ -175,24 +164,22 @@ static inline XCCircularBufferPageTable_s * _Nonnull __XCCircularBufferPageTable
 
 //0 < length
 //0 <= location <= table->count
-static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableInsert(XCCircularBufferPageTable_s * _Nonnull table, XIndex location, XIndex length) {
+static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableInsert(XUInt8 * _Nonnull table, XIndex tableCapacity, XIndex tableOffset, XIndex tableCount, XIndex location, XIndex length) {
     if (length <= 0) {
         return NULL;
     }
-    XIndex count = table->count + length;
+    XIndex count = tableCount + length;
     XIndex capacity = __XCCircularBufferGoodCapacity(count);
-    if (capacity > table->capacity) {
+    if (capacity > tableCapacity) {
         //拓容
-        XCCircularBufferPageTable_s * result = __XCCircularBufferPageTableCreate(capacity);
-        result->count = table->count + length;
-        for (XIndex idx=0; idx<location; idx++) {
-            __XCPageTableSet(result->capacity, result->offset, result->pages, idx, __XCPageTableGet(table->capacity, table->offset, table->pages, idx));
+        XUInt8 * pages = __XCCircularBufferPageTableCreate(capacity);
+        XIndex offset = 0;
+        XIndex count = tableCount + length;
+        if (location > 0) {
+            XCCCircularBufferCopy(pages, capacity, offset, 0, table->pages, table->capacity, table->offset, 0, location, sizeof(void *));
         }
-        for (XIndex idx=0; idx<length; idx++) {
-            __XCPageTableSet(result->capacity, result->offset, result->pages, location + idx, NULL);
-        }
-        for (XIndex idx=location; idx<table->count; idx++) {
-            __XCPageTableSet(result->capacity, result->offset, result->pages, idx + length, __XCPageTableGet(table->capacity, table->offset, table->pages, idx));
+        if (tableCount > location) {
+            XCCCircularBufferCopy(pages, capacity, offset, location + length, table->pages, table->capacity, table->offset, location, table->count - location, sizeof(void *));
         }
         return result;
     } else {
@@ -232,11 +219,11 @@ static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTabl
         //缩容
         XCCircularBufferPageTable_s * result = __XCCircularBufferPageTableCreate(capacity);
         result->count = table->count - length;
-        for (XIndex idx=0; idx<location; idx++) {
-            __XCPageTableSet(result->capacity, result->offset, result->pages, idx, __XCPageTableGet(table->capacity, table->offset, table->pages, idx));
+        if (location > 0) {
+            XCCCircularBufferCopy(result->pages, capacity, result->offset, 0, table->pages, table->capacity, table->offset, 0, location, sizeof(void *));
         }
-        for (XIndex idx=location+length; idx<table->count; idx++) {
-            __XCPageTableSet(result->capacity, result->offset, result->pages, idx-length, __XCPageTableGet(table->capacity, table->offset, table->pages, idx));
+        if (table->count > location+length) {
+            XCCCircularBufferCopy(result->pages, capacity, result->offset, location, table->pages, table->capacity, table->offset, location + length, table->count - location - length, sizeof(void *));
         }
         return result;
     } else {
@@ -368,6 +355,41 @@ void _XCCircularBufferReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, 
     
 }
 
+
+/**
+ * 把range中的元素前移n
+ * 前置条件: range.location + range.length <= capacity,   range.location >= n,
+ */
+void __XCCircularBufferMoveForward1(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    
+}
+
+/**
+* 把range中的元素后移n
+* 前置条件: range.location + range.length <= capacity,  capacity - (range.location + range.length) >= n
+*/
+void __XCCircularBufferMoveBackward1(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    
+}
+
+/**
+ * 把range中的元素前移n
+ * 前置条件: range.location + range.length <= capacity,   range.location >= n,
+ */
+void __XCCircularBufferMoveForward2(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    
+}
+
+/**
+* 把range中的元素后移n
+* 前置条件: range.location + range.length <= capacity,  capacity - (range.location + range.length) >= n
+*/
+void __XCCircularBufferMoveBackward2(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    
+}
+
+
+
 //在location位置， 插入length
 
 //0 < length
@@ -438,7 +460,13 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
             //1维 => 1维
 
             //移动
+            if (location < buffer->_base.count - location) {
+                //移动前半部分
+                
+            } else {
+                //移动后半部分
 
+            }
         } else {
             //不可能发生
             abort();

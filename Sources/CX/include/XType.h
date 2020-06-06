@@ -35,6 +35,13 @@ extern "C" {
 #endif
 #include "CXTargetConditionals.h"
 
+#define XAssert(cond, func, desc) {\
+    if (!(cond)) {\
+        fprintf(stderr, "%s error, %s", func, desc);\
+        abort();\
+    }\
+}
+
 
 typedef _Bool XBool;
 
@@ -111,6 +118,33 @@ static inline XRange XRangeMake(XIndex location, XIndex length) {
     };
     return r;
 }
+
+//向前移动
+static inline XRange XRangeMoveForward(XRange range, XIndex n) {
+    XAssert(range.location >= n, __func__, "");
+    XRange r = {
+        .location = range.location - n,
+        .length = range.length,
+    };
+    return r;
+}
+//向后移动
+static inline XRange XRangeMoveBackward(XRange range, XIndex n) {
+    XAssert(range.location + n >= range.location, __func__, "");
+    XRange r = {
+        .location = range.location + n,
+        .length = range.length,
+    };
+    return r;
+}
+static inline XRange XRangeMove(XRange range, XSInt n) {
+    if (n < 0) {
+        return XRangeMoveForward(range, - n);
+    } else {
+        return XRangeMoveBackward(range, n);
+    }
+}
+
 
 typedef char XU8Char;
 typedef uint16_t XU16Char;
@@ -371,12 +405,6 @@ typedef enum {
 //}
 
 
-#define XAssert(cond, func, desc) {\
-    if (!(cond)) {\
-        fprintf(stderr, "%s error, %s", func, desc);\
-        abort();\
-    }\
-}
 
 
 #if defined(__cplusplus)

@@ -149,7 +149,7 @@ typedef struct __XCCircularBuffer {
     XCCircularBufferIndex offset;
     XIndex pageCount;
     XIndex pageCapacity;
-    XPtr _Nullable _storage;
+    XUInt8 * _Nullable _storage;
 } XCCircularBuffer_s;
     
 #endif /* XCCircularBuffer_h */
