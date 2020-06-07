@@ -74,25 +74,21 @@ static inline XIndex __XCCircularBufferPageTableGoodCapacity(XIndex count) {
     return result;
 }
 
-static inline XPtr _Nonnull __XCCircularBufferPageCreate(XIndex elementSize, XIndex capacity) {
-    XCCircularBufferPageTable_s * newTable = XAlignedAllocate(elementSize * capacity, 64);
+static inline XUInt8 * _Nonnull __XCBufferCreate(XIndex elementSize, XIndex capacity) {
+    XUInt8 * newTable = XAlignedAllocate(elementSize * capacity, 64);
     assert(newTable);
-    newTable->capacity = capacity;
-    newTable->count = 0;
-    newTable->offset = 0;
-    memset(&(newTable->pages[0]), 0, sizeof(XPtr) * capacity);
+    memset(newTable, 0, elementSize * capacity);
     return newTable;
+}
+static inline XUInt8 * _Nonnull __XCCircularBufferPageCreate(XIndex elementSize, XIndex capacity) {
+    return __XCBufferCreate(elementSize, capacity);
 }
 
 static inline XUInt8 * _Nonnull __XCCircularBufferPageTableCreate(XIndex capacity) {
-    XUInt8 * newTable = XAlignedAllocate(sizeof(XPtr) * capacity, 64);
-    assert(newTable);
-    memset(newTable, 0, sizeof(XPtr) * capacity);
-    return newTable;
+    return __XCBufferCreate(sizeof(XPtr), capacity);
 }
 
-static inline void __XCCircularBufferPageTableDestroy(XCCircularBufferPageTable_s * _Nonnull table) {
-    assert(table->count == 0);
+static inline void __XCCircularBufferPageTableDestroy(XUInt8 * _Nonnull table) {
     free(table);
 }
 
@@ -164,91 +160,95 @@ static inline XCCircularBufferPageTable_s * _Nonnull __XCCircularBufferPageTable
 
 //0 < length
 //0 <= location <= table->count
-static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableInsert(XUInt8 * _Nonnull table, XIndex tableCapacity, XIndex tableOffset, XIndex tableCount, XIndex location, XIndex length) {
+static inline void __XCCircularBufferPageTableInsert(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
     if (length <= 0) {
-        return NULL;
+        return;
     }
-    XIndex count = tableCount + length;
-    XIndex capacity = __XCCircularBufferGoodCapacity(count);
-    if (capacity > tableCapacity) {
+    XIndex newCount = buffer->pageCount + length;
+    XIndex capacity = __XCCircularBufferPageTableGoodCapacity(newCount);
+    if (capacity > buffer->pageCapacity) {
         //拓容
+        XUInt8 * oldPages = buffer->_storage;
+
         XUInt8 * pages = __XCCircularBufferPageTableCreate(capacity);
-        XIndex offset = 0;
-        XIndex count = tableCount + length;
         if (location > 0) {
-            XCCCircularBufferCopy(pages, capacity, offset, 0, table->pages, table->capacity, table->offset, 0, location, sizeof(void *));
+            XCCCircularBufferCopy(pages, capacity, 0, 0, oldPages, buffer->pageCapacity, buffer->offset.page, 0, location, sizeof(void *));
         }
-        if (tableCount > location) {
-            XCCCircularBufferCopy(pages, capacity, offset, location + length, table->pages, table->capacity, table->offset, location, table->count - location, sizeof(void *));
+        if (buffer->pageCount > location) {
+            XCCCircularBufferCopy(pages, capacity, 0, location + length, oldPages, buffer->pageCapacity, buffer->offset.page, location, buffer->pageCount - location, sizeof(void *));
         }
-        return result;
+        buffer->pageCapacity = capacity;
+        buffer->pageCount = newCount;
+        buffer->offset.page = 0;
+        buffer->_storage = pages;
+        
+        __XCCircularBufferPageTableDestroy(oldPages);
+        
     } else {
-        XIndex right = table->count - location;
+        XIndex right = buffer->pageCount - location;
         XIndex left = location;
         if (left < right) {
             //移动前半部分, 前翻
-            if (table->offset >= length) {
-                table->offset -= length;
+            if (buffer->offset.page >= length) {
+                buffer->offset.page -= length;
             } else {
-                table->offset = table->offset + table->capacity - length;
+                buffer->offset.page = buffer->offset.page + buffer->pageCapacity - length;
             }
-            table->count += length;
-
-            for (XIndex idx=0; idx<left; idx++) {
-                __XCPageTableMove(table->capacity, table->offset, table->pages, idx, idx+length);
+            buffer->pageCount = newCount;
+            if (left > 0) {
+                XCCCircularBufferMoveForward(buffer->_storage, buffer->pageCapacity, buffer->offset.page, sizeof(XPtr), XRangeMake(length, left), length);
             }
         } else {
             //移动后半部分, 后翻
-            XIndex oldCount = table->count;
-            table->count += length;
-
-            for (XIndex offset=1; offset<=right; offset++) {
-                __XCPageTableMove(table->capacity, table->offset, table->pages, table->count - offset, oldCount - offset);
+            buffer->pageCount = newCount;
+            if (right > 0) {
+                XCCCircularBufferMoveBackward(buffer->_storage, buffer->pageCapacity, buffer->offset.page, sizeof(XPtr), XRangeMake(location, right), length);
             }
         }
-        return NULL;
     }
 }
 
 //0 < length <= table->count
 //0 < length + location <= table->count
-static inline XCCircularBufferPageTable_s * _Nullable __XCCircularBufferPageTableRemove(XCCircularBufferPageTable_s * _Nonnull table, XIndex location, XIndex length) {
-    XIndex count = table->count - length;
-    XIndex capacity = __XCCircularBufferGoodCapacity(count);
-    if (capacity < table->capacity) {
+static inline void __XCCircularBufferPageTableRemove(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
+    XIndex newCount = buffer->pageCount + length;
+    XIndex capacity = __XCCircularBufferPageTableGoodCapacity(newCount);
+    if (capacity < buffer->pageCapacity) {
         //缩容
-        XCCircularBufferPageTable_s * result = __XCCircularBufferPageTableCreate(capacity);
-        result->count = table->count - length;
+        
+        XUInt8 * oldPages = buffer->_storage;
+
+        XUInt8 * pages = __XCCircularBufferPageTableCreate(capacity);
         if (location > 0) {
-            XCCCircularBufferCopy(result->pages, capacity, result->offset, 0, table->pages, table->capacity, table->offset, 0, location, sizeof(void *));
+            XCCCircularBufferCopy(pages, capacity, 0, 0, oldPages, buffer->pageCapacity, buffer->offset.page, 0, location, sizeof(XPtr));
         }
-        if (table->count > location+length) {
-            XCCCircularBufferCopy(result->pages, capacity, result->offset, location, table->pages, table->capacity, table->offset, location + length, table->count - location - length, sizeof(void *));
+        if (buffer->pageCount > location+length) {
+            XCCCircularBufferCopy(pages, capacity, 0, location, oldPages, buffer->pageCapacity, buffer->offset.page, location + length, buffer->pageCount - location - length, sizeof(XPtr));
         }
-        return result;
+        buffer->pageCapacity = capacity;
+        buffer->pageCount = newCount;
+        buffer->offset.page = 0;
+        buffer->_storage = pages;
+        
+        __XCCircularBufferPageTableDestroy(oldPages);
+
     } else {
-        XIndex right = table->count - location - length;
+        XIndex right = buffer->pageCount - location - length;
         XIndex left = location;
         
-        for (XIndex idx=location; idx<location+length; idx++) {
-            __XCPageTableSet(table->capacity, table->offset, table->pages, idx, NULL);
-        }
-        
         if (left < right) {
-            //移动前半部分, 后翻 location-offset => location + length - offset
-            for (XIndex offset=1; offset<=left; offset++) {
-                __XCPageTableMove(table->capacity, table->offset, table->pages, location + length - offset, location-offset);
+            //移动前半部分, 后翻 (0, location) => (0+length, )
+            if (left > 0) {
+                XCCCircularBufferMoveBackward(buffer->_storage, buffer->pageCapacity, buffer->offset.page, sizeof(XPtr), XRangeMake(0, left), length);
             }
-            table->offset = (table->offset + length) % table->capacity;
-            table->count -= length;
+            buffer->offset.page = (buffer->offset.page + length) % buffer->capacity;
+            buffer->pageCount = newCount;
         } else {
-            //移动后半部分, 前翻 location+length+offset => location+offset
-            for (XIndex offset=0; offset<=right; offset++) {
-                __XCPageTableMove(table->capacity, table->offset, table->pages, location+offset, location+length+offset);
-            }
-            table->count -= length;
+            //移动后半部分, 前翻 (location+length, oldCount - right) => (location, )
+            
+            XCCCircularBufferMoveForward(buffer->_storage, buffer->pageCapacity, buffer->offset.page, sizeof(XPtr), XRangeMake(location+length, right), buffer->pageCount - right);
+            buffer->pageCount = newCount;
         }
-        return NULL;
     }
 
 }
@@ -361,6 +361,10 @@ void _XCCircularBufferReverseEnumerate(XCArrayPtr _Nonnull array, XRange range, 
  * 前置条件: range.location + range.length <= capacity,   range.location >= n,
  */
 void __XCCircularBufferMoveForward1(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    if (range.length <= 0) {
+        return;
+    }
+    
     
 }
 
@@ -369,6 +373,9 @@ void __XCCircularBufferMoveForward1(XCCircularBuffer_s * _Nonnull buffer, XRange
 * 前置条件: range.location + range.length <= capacity,  capacity - (range.location + range.length) >= n
 */
 void __XCCircularBufferMoveBackward1(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    if (range.length <= 0) {
+        return;
+    }
     
 }
 
@@ -377,6 +384,9 @@ void __XCCircularBufferMoveBackward1(XCCircularBuffer_s * _Nonnull buffer, XRang
  * 前置条件: range.location + range.length <= capacity,   range.location >= n,
  */
 void __XCCircularBufferMoveForward2(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    if (range.length <= 0) {
+        return;
+    }
     
 }
 
@@ -385,6 +395,9 @@ void __XCCircularBufferMoveForward2(XCCircularBuffer_s * _Nonnull buffer, XRange
 * 前置条件: range.location + range.length <= capacity,  capacity - (range.location + range.length) >= n
 */
 void __XCCircularBufferMoveBackward2(XCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex n) {
+    if (range.length <= 0) {
+        return;
+    }
     
 }
 
@@ -395,9 +408,8 @@ void __XCCircularBufferMoveBackward2(XCCircularBuffer_s * _Nonnull buffer, XRang
 //0 < length
 //0 <= location <= table->_base.count
 static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnull buffer, XIndex location, XIndex length) {
-    
-    XIndex capacity = __XCCircularBufferGoodCapacity(buffer->_base.count + length);
-    
+    XIndex newCount = buffer->_base.count + length;
+    XIndex capacity = __XCCircularBufferGoodCapacity(newCount);
     //优先处理 1维 => 1维 1维 => 2维
     if (capacity > buffer->capacity) {
         //拓容
@@ -405,26 +417,69 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
         if (0 == buffer->capacity) {
             if (capacity > X_BUILD_CircularBufferPageCapacity) {
                 //0维 => 2维
-                
-                
+                XIndex pageCount = (newCount + X_BUILD_CircularBufferPageCapacity - 1) / X_BUILD_CircularBufferPageCapacity;
+                XIndex pageCapacity = __XCCircularBufferPageTableGoodCapacity(pageCount);
+                XUInt8 * table = __XCCircularBufferPageTableCreate(pageCapacity);
+                buffer->_storage = table;
+                buffer->pageCount = pageCount;
+                buffer->pageCapacity = pageCapacity;
+                buffer->offset.page = 0;
+                buffer->offset.item = 0;
+                buffer->_base.count = newCount;
+                buffer->capacity = capacity;
             } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
                 //0维 => 1维
-                
-                
+                XUInt8 * page = __XCCircularBufferPageCreate(buffer->_base.elementSize, capacity);
+                buffer->_storage = page;
+                buffer->pageCount = 0;
+                buffer->pageCapacity = 0;
+                buffer->offset.page = 0;
+                buffer->offset.item = 0;
+                buffer->_base.count = newCount;
+                buffer->capacity = capacity;
             } else {
                 //不可能发生
                 abort();
             }
             return;
         } else if (buffer->capacity <= X_BUILD_CircularBufferPageCapacity) {
+            XIndex oldCapacity = buffer->capacity;
+            XIndex oldCount = buffer->_base.count;
+            XIndex oldOffset = buffer->offset.item;
+            XUInt8 * oldPage = buffer->_storage;
             if (capacity > X_BUILD_CircularBufferPageCapacity) {
                 //1维 => 2维
+                XIndex pageCount = (newCount + X_BUILD_CircularBufferPageCapacity - 1) / X_BUILD_CircularBufferPageCapacity;
+                XIndex pageCapacity = __XCCircularBufferPageTableGoodCapacity(pageCount);
+                XUInt8 * table = __XCCircularBufferPageTableCreate(pageCapacity);
+                buffer->_storage = table;
+                buffer->pageCount = pageCount;
+                buffer->pageCapacity = pageCapacity;
+                buffer->offset.page = 0;
+                buffer->offset.item = 0;
+                buffer->_base.count = newCount;
+                buffer->capacity = capacity;
+                
+                
+                
                 
                 return;
             } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
                 //1维 => 1维
+                XUInt8 * page = __XCCircularBufferPageCreate(buffer->_base.elementSize, capacity);
+                buffer->_storage = page;
+                buffer->pageCount = 0;
+                buffer->pageCapacity = 0;
+                buffer->offset.page = 0;
+                buffer->offset.item = 0;
+                buffer->_base.count = newCount;
+                buffer->capacity = capacity;
                 
                 
+                
+                
+                
+                return;
             } else {
                 //不可能发生
                 abort();
@@ -452,43 +507,32 @@ static inline void __XCCircularBufferResizeByInsert(XCCircularBuffer_s * _Nonnul
                 return;
             } else {
                 //移动
-                
-                
-                
+                if (location < buffer->_base.count - location) {
+                    //移动前半部分
+                    __XCCircularBufferMoveForward2(buffer, XRangeMake(0, location), length);
+                } else {
+                    //移动后半部分
+                    __XCCircularBufferMoveBackward2(buffer, XRangeMake(location+length, buffer->_base.count - location), length);
+                }
             }
         } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
             //1维 => 1维
-
+            XIndex oldCapacity = buffer->capacity;
+            XIndex oldCount = buffer->_base.count;
+            XIndex oldOffset = buffer->offset.item;
+            XUInt8 * oldPage = buffer->_storage;
+            
             //移动
             if (location < buffer->_base.count - location) {
                 //移动前半部分
-                
+                __XCCircularBufferMoveForward1(buffer, XRangeMake(0, location), length);
             } else {
                 //移动后半部分
-
+                __XCCircularBufferMoveBackward1(buffer, XRangeMake(location+length, buffer->_base.count - location), length);
             }
         } else {
             //不可能发生
             abort();
-        }
-    }
-    
-    //移动
-    if (length % X_BUILD_CircularBufferPageCapacity == 0) {
-        if (location < buffer->_base.count - location) {
-            //移动前半部分
-            
-        } else {
-            //移动后半部分
-
-        }
-    } else {
-        if (location < buffer->_base.count - location) {
-            //移动前半部分
-            
-        } else {
-            //移动后半部分
-
         }
     }
 }
