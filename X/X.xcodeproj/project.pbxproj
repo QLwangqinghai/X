@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		772FF079248557C90051637C /* XCollectionBase.c in Sources */ = {isa = PBXBuildFile; fileRef = 772FF078248557C90051637C /* XCollectionBase.c */; };
 		77C7F5C724742B4F00B7EC3C /* XClass.c in Sources */ = {isa = PBXBuildFile; fileRef = 77C7F5C624742B4F00B7EC3C /* XClass.c */; };
 		77C7F5CA2476C53D00B7EC3C /* XWeakStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = 77C7F5C92476C53D00B7EC3C /* XWeakStorage.c */; };
 		D6446FD8244D7254009E4F57 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6446FD7244D7254009E4F57 /* AppDelegate.m */; };
@@ -28,10 +27,15 @@
 		D6447016244D757D009E4F57 /* XRef.c in Sources */ = {isa = PBXBuildFile; fileRef = D6447015244D757D009E4F57 /* XRef.c */; };
 		D6447021245018AE009E4F57 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = D6447020245018AE009E4F57 /* main.mm */; };
 		D647EC6E24584E8F008E1D15 /* XDate.c in Sources */ = {isa = PBXBuildFile; fileRef = D647EC6D24584E8F008E1D15 /* XDate.c */; };
-		D66C92512483C28B00AEABAF /* XCCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D66C92502483C28B00AEABAF /* XCCircularBuffer.c */; };
 		D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = D681FD7B2456D392001B28EB /* XByteStorage.c */; };
 		D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE08B92463AFBD008854F8 /* CXTester.m */; };
 		D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */; };
+		D6F4A3D8248E04D4007923C9 /* XCCBase.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3D4248E04D4007923C9 /* XCCBase.c */; };
+		D6F4A3DE248E078E007923C9 /* XCCArray.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3DD248E078E007923C9 /* XCCArray.c */; };
+		D6F4A3E5248E0BB2007923C9 /* XCollectionBase.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3E2248E0BB2007923C9 /* XCollectionBase.c */; };
+		D6F4A413248E58AC007923C9 /* XCCDoubleCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */; };
+		D6F4A416248E6185007923C9 /* XCCUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A415248E6185007923C9 /* XCCUtil.c */; };
+		D6F4A419248E626B007923C9 /* XCCCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,8 +51,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		772FF077248557C90051637C /* XCollectionBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCollectionBase.h; sourceTree = "<group>"; };
-		772FF078248557C90051637C /* XCollectionBase.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCollectionBase.c; sourceTree = "<group>"; };
 		77C7F5C524742B4F00B7EC3C /* XClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XClass.h; sourceTree = "<group>"; };
 		77C7F5C624742B4F00B7EC3C /* XClass.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XClass.c; sourceTree = "<group>"; };
 		77C7F5C92476C53D00B7EC3C /* XWeakStorage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XWeakStorage.c; sourceTree = "<group>"; };
@@ -90,13 +92,23 @@
 		D6447020245018AE009E4F57 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		D647EC6A24583E33008E1D15 /* XAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XAtomic.h; sourceTree = "<group>"; };
 		D647EC6D24584E8F008E1D15 /* XDate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XDate.c; sourceTree = "<group>"; };
-		D66C924F2483C28B00AEABAF /* XCCircularBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCircularBuffer.h; sourceTree = "<group>"; };
-		D66C92502483C28B00AEABAF /* XCCircularBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCircularBuffer.c; sourceTree = "<group>"; };
 		D681FD7B2456D392001B28EB /* XByteStorage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XByteStorage.c; sourceTree = "<group>"; };
 		D6CE08B82463AFBD008854F8 /* CXTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXTester.h; sourceTree = "<group>"; };
 		D6CE08B92463AFBD008854F8 /* CXTester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXTester.m; sourceTree = "<group>"; };
 		D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCoreCollection.h; sourceTree = "<group>"; };
 		D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCoreCollection.c; sourceTree = "<group>"; };
+		D6F4A3D4248E04D4007923C9 /* XCCBase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCCBase.c; sourceTree = "<group>"; };
+		D6F4A3D6248E04D4007923C9 /* XCCBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCCBase.h; sourceTree = "<group>"; };
+		D6F4A3DC248E078E007923C9 /* XCCArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCArray.h; sourceTree = "<group>"; };
+		D6F4A3DD248E078E007923C9 /* XCCArray.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCArray.c; sourceTree = "<group>"; };
+		D6F4A3E1248E0BB2007923C9 /* XCollectionBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCollectionBase.h; sourceTree = "<group>"; };
+		D6F4A3E2248E0BB2007923C9 /* XCollectionBase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCollectionBase.c; sourceTree = "<group>"; };
+		D6F4A411248E58AC007923C9 /* XCCDoubleCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCCDoubleCircularBuffer.h; sourceTree = "<group>"; };
+		D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCCDoubleCircularBuffer.c; sourceTree = "<group>"; };
+		D6F4A414248E6185007923C9 /* XCCUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCCUtil.h; sourceTree = "<group>"; };
+		D6F4A415248E6185007923C9 /* XCCUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCCUtil.c; sourceTree = "<group>"; };
+		D6F4A417248E626B007923C9 /* XCCCircularBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCCircularBuffer.h; sourceTree = "<group>"; };
+		D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCCircularBuffer.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,8 +179,8 @@
 		D6446FEB244D7261009E4F57 /* CX */ = {
 			isa = PBXGroup;
 			children = (
+				D6F4A3DF248E0BB2007923C9 /* Collection */,
 				D6F4A3CD248B66BB007923C9 /* CoreCollection */,
-				D66C924E2483C24900AEABAF /* Collection */,
 				D6446FED244D7261009E4F57 /* CXInit.c */,
 				D6446FEC244D7261009E4F57 /* XAllocator.c */,
 				D681FD7B2456D392001B28EB /* XByteStorage.c */,
@@ -242,25 +254,32 @@
 			path = T;
 			sourceTree = "<group>";
 		};
-		D66C924E2483C24900AEABAF /* Collection */ = {
-			isa = PBXGroup;
-			children = (
-				D66C924F2483C28B00AEABAF /* XCCircularBuffer.h */,
-				D66C92502483C28B00AEABAF /* XCCircularBuffer.c */,
-				772FF077248557C90051637C /* XCollectionBase.h */,
-				772FF078248557C90051637C /* XCollectionBase.c */,
-			);
-			name = Collection;
-			path = ../Collection;
-			sourceTree = "<group>";
-		};
 		D6F4A3CD248B66BB007923C9 /* CoreCollection */ = {
 			isa = PBXGroup;
 			children = (
+				D6F4A414248E6185007923C9 /* XCCUtil.h */,
+				D6F4A415248E6185007923C9 /* XCCUtil.c */,
+				D6F4A3D6248E04D4007923C9 /* XCCBase.h */,
+				D6F4A3D4248E04D4007923C9 /* XCCBase.c */,
 				D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */,
 				D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */,
+				D6F4A411248E58AC007923C9 /* XCCDoubleCircularBuffer.h */,
+				D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */,
+				D6F4A3DC248E078E007923C9 /* XCCArray.h */,
+				D6F4A3DD248E078E007923C9 /* XCCArray.c */,
+				D6F4A417248E626B007923C9 /* XCCCircularBuffer.h */,
+				D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */,
 			);
 			path = CoreCollection;
+			sourceTree = "<group>";
+		};
+		D6F4A3DF248E0BB2007923C9 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				D6F4A3E1248E0BB2007923C9 /* XCollectionBase.h */,
+				D6F4A3E2248E0BB2007923C9 /* XCollectionBase.c */,
+			);
+			path = Collection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -356,18 +375,22 @@
 				D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */,
 				D6447016244D757D009E4F57 /* XRef.c in Sources */,
 				D6447010244D7261009E4F57 /* XProcess.c in Sources */,
-				772FF079248557C90051637C /* XCollectionBase.c in Sources */,
 				D6446FDB244D7254009E4F57 /* ViewController.mm in Sources */,
+				D6F4A3E5248E0BB2007923C9 /* XCollectionBase.c in Sources */,
+				D6F4A3D8248E04D4007923C9 /* XCCBase.c in Sources */,
 				77C7F5CA2476C53D00B7EC3C /* XWeakStorage.c in Sources */,
 				D6447009244D7261009E4F57 /* XMemory.c in Sources */,
 				D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */,
 				77C7F5C724742B4F00B7EC3C /* XClass.c in Sources */,
 				D644700B244D7261009E4F57 /* XType.c in Sources */,
 				D6446FE3244D7256009E4F57 /* main.m in Sources */,
-				D66C92512483C28B00AEABAF /* XCCircularBuffer.c in Sources */,
+				D6F4A416248E6185007923C9 /* XCCUtil.c in Sources */,
 				D6447007244D7261009E4F57 /* XAllocator.c in Sources */,
+				D6F4A413248E58AC007923C9 /* XCCDoubleCircularBuffer.c in Sources */,
+				D6F4A419248E626B007923C9 /* XCCCircularBuffer.c in Sources */,
 				D6446FD8244D7254009E4F57 /* AppDelegate.m in Sources */,
 				D644700D244D7261009E4F57 /* XDevice.c in Sources */,
+				D6F4A3DE248E078E007923C9 /* XCCArray.c in Sources */,
 				D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */,
 				D6447014244D7306009E4F57 /* CXX.cpp in Sources */,
 				D6447008244D7261009E4F57 /* CXInit.c in Sources */,
