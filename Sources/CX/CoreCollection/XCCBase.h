@@ -37,6 +37,10 @@ typedef struct __XCCBase {
     XIndex count;
 } XCCBase_s;
 
+static inline void XCCBaseInit(XCCBase_s * _Nonnull base, XIndex cid, XIndex elementSize, XIndex count) {
+    
+}
+
 
 typedef struct __XCCArraySlice {
     XRange range;

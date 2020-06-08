@@ -27,6 +27,7 @@
 		D6447016244D757D009E4F57 /* XRef.c in Sources */ = {isa = PBXBuildFile; fileRef = D6447015244D757D009E4F57 /* XRef.c */; };
 		D6447021245018AE009E4F57 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = D6447020245018AE009E4F57 /* main.mm */; };
 		D647EC6E24584E8F008E1D15 /* XDate.c in Sources */ = {isa = PBXBuildFile; fileRef = D647EC6D24584E8F008E1D15 /* XDate.c */; };
+		D66E04F4248E927600B1A91D /* XCCBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04F3248E927600B1A91D /* XCCBuffer.c */; };
 		D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = D681FD7B2456D392001B28EB /* XByteStorage.c */; };
 		D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE08B92463AFBD008854F8 /* CXTester.m */; };
 		D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */; };
@@ -92,6 +93,8 @@
 		D6447020245018AE009E4F57 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		D647EC6A24583E33008E1D15 /* XAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XAtomic.h; sourceTree = "<group>"; };
 		D647EC6D24584E8F008E1D15 /* XDate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XDate.c; sourceTree = "<group>"; };
+		D66E04F2248E927600B1A91D /* XCCBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCBuffer.h; sourceTree = "<group>"; };
+		D66E04F3248E927600B1A91D /* XCCBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCBuffer.c; sourceTree = "<group>"; };
 		D681FD7B2456D392001B28EB /* XByteStorage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XByteStorage.c; sourceTree = "<group>"; };
 		D6CE08B82463AFBD008854F8 /* CXTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXTester.h; sourceTree = "<group>"; };
 		D6CE08B92463AFBD008854F8 /* CXTester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXTester.m; sourceTree = "<group>"; };
@@ -263,12 +266,14 @@
 				D6F4A3D4248E04D4007923C9 /* XCCBase.c */,
 				D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */,
 				D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */,
+				D66E04F2248E927600B1A91D /* XCCBuffer.h */,
+				D66E04F3248E927600B1A91D /* XCCBuffer.c */,
+				D6F4A417248E626B007923C9 /* XCCCircularBuffer.h */,
+				D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */,
 				D6F4A411248E58AC007923C9 /* XCCDoubleCircularBuffer.h */,
 				D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */,
 				D6F4A3DC248E078E007923C9 /* XCCArray.h */,
 				D6F4A3DD248E078E007923C9 /* XCCArray.c */,
-				D6F4A417248E626B007923C9 /* XCCCircularBuffer.h */,
-				D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */,
 			);
 			path = CoreCollection;
 			sourceTree = "<group>";
@@ -373,6 +378,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */,
+				D66E04F4248E927600B1A91D /* XCCBuffer.c in Sources */,
 				D6447016244D757D009E4F57 /* XRef.c in Sources */,
 				D6447010244D7261009E4F57 /* XProcess.c in Sources */,
 				D6446FDB244D7254009E4F57 /* ViewController.mm in Sources */,

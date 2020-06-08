@@ -462,9 +462,13 @@ static inline void __XCCDoubleCircularBufferResizeByInsert(XCCDoubleCircularBuff
             if (location < buffer->_base.count - location) {
                 //移动前半部分
                 __XCCDoubleCircularBufferMoveForward1(buffer, XRangeMake(0, location), length);
+                
+                buffer->_base.count = newCount;
+                buffer->offset.item = (buffer->offset.item + X_BUILD_DoubleCircularBufferPageCapacity - length) % X_BUILD_DoubleCircularBufferPageCapacity;
             } else {
                 //移动后半部分
                 __XCCDoubleCircularBufferMoveBackward1(buffer, XRangeMake(location+length, buffer->_base.count - location), length);
+                buffer->_base.count = newCount;
             }
         } else {
             //不可能发生

@@ -18,5 +18,7 @@ typedef struct __XCCCircularBuffer {
     XUInt8 * _Nullable _storage;
 } XCCCircularBuffer_s;
 
+void XCCCircularBufferInsertResize(XCCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex capacity);
+void XCCCircularBufferRemoveResize(XCCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex capacity);
 
 #endif /* XCCCircularBuffer_h */
