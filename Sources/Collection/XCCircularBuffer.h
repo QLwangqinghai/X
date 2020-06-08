@@ -11,10 +11,6 @@
 
 #include "XCollectionBase.h"
 
-/*
- 32位下 最多3维数组 9-10-12
- 64位下 最多5维数组 3-13-13-13-21
- */
 
 #if CX_TARGET_RT_64_BIT
 
@@ -94,29 +90,6 @@ static inline XCCircularBufferIndex __XCCircularBufferAlignedCapacity(XIndex cap
     return result;
 }
 
-static inline XBool __XCCircularBufferNeedExpansion(XCCircularBufferIndex current, XCCircularBufferIndex aligned) {
-    if (aligned.page < current.page) {
-        return false;
-    }
-    
-    return false;
-}
-
-static inline XBool __XCCircularBufferNeedReduction(XCCircularBufferIndex current, XCCircularBufferIndex aligned) {
-
-    return false;
-}
-
-
-static inline XIndex __XCCircularBufferPageLevelOfCapacity(XIndex capacity) {
-    if (capacity == 0) {
-        return 0;
-    } else if (capacity <= X_BUILD_CircularBufferPageCapacity) {
-        return 1;
-    } else {
-        return 2;
-    }
-}
 
 static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
     if (capacity > X_BUILD_CircularBufferPageCapacity) {
@@ -134,14 +107,6 @@ static inline XIndex __XCCircularBufferGoodCapacity(XIndex capacity) {
     }
 }
 
-
-
-
-typedef struct __XCBuffer {
-    XIndex deep: 3;
-    XIndex count: (XUIntBitsCount - 3);
-    XPtr _Nullable items[0];
-} XCBuffer_s;
 
 typedef struct __XCCircularBuffer {
     XCArray_s _base;
