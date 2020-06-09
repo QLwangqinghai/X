@@ -14,7 +14,7 @@
 
 XCCBuffer_s * _Nonnull XCCBufferCreate(XIndex elementSize, XIndex count) {
     XAssert(elementSize > 0, __func__, "");
-    XAssert(count <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(count <= X_BUILD_CollectionCapacityMax, __func__, "");
     XSize size = sizeof(XCCBuffer_s) + elementSize * count;
     XCCBuffer_s * buffer = (XCCBuffer_s *)XAllocate(size);
     assert(buffer);

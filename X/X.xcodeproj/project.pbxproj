@@ -38,6 +38,7 @@
 		D6F4A416248E6185007923C9 /* XCCUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A415248E6185007923C9 /* XCCUtil.c */; };
 		D6F4A419248E626B007923C9 /* XCCCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */; };
 		D6F4A42E248F3905007923C9 /* XCCPageTable.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A42D248F3905007923C9 /* XCCPageTable.c */; };
+		D6F4A438248FAF6E007923C9 /* XCCMap.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A437248FAF6E007923C9 /* XCCMap.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -115,6 +116,8 @@
 		D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCCircularBuffer.c; sourceTree = "<group>"; };
 		D6F4A42C248F3905007923C9 /* XCCPageTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCPageTable.h; sourceTree = "<group>"; };
 		D6F4A42D248F3905007923C9 /* XCCPageTable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCPageTable.c; sourceTree = "<group>"; };
+		D6F4A436248FAF6E007923C9 /* XCCMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCMap.h; sourceTree = "<group>"; };
+		D6F4A437248FAF6E007923C9 /* XCCMap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCMap.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +282,8 @@
 				D6F4A3DD248E078E007923C9 /* XCCArray.c */,
 				D6F4A42C248F3905007923C9 /* XCCPageTable.h */,
 				D6F4A42D248F3905007923C9 /* XCCPageTable.c */,
+				D6F4A436248FAF6E007923C9 /* XCCMap.h */,
+				D6F4A437248FAF6E007923C9 /* XCCMap.c */,
 			);
 			path = CoreCollection;
 			sourceTree = "<group>";
@@ -407,6 +412,7 @@
 				D6447014244D7306009E4F57 /* CXX.cpp in Sources */,
 				D6447008244D7261009E4F57 /* CXInit.c in Sources */,
 				D644700E244D7261009E4F57 /* XRuntime.c in Sources */,
+				D6F4A438248FAF6E007923C9 /* XCCMap.c in Sources */,
 				D644700C244D7261009E4F57 /* XNumber.c in Sources */,
 				D647EC6E24584E8F008E1D15 /* XDate.c in Sources */,
 				D644700A244D7261009E4F57 /* XObject.c in Sources */,

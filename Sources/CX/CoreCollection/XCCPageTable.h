@@ -22,7 +22,7 @@ typedef struct __XCCPageTable {
 static inline XIndex XCCPageTableGoodCapacity(XIndex count) {
     XIndex capacity = count + 4;
     XIndex one = 1;
-    assert(count <= X_BUILD_ArrayCapacityMax);
+    assert(count <= X_BUILD_CollectionCapacityMax);
 
 #if CX_TARGET_RT_64_BIT
     for (XIndex i=4; i<64; i++) {
@@ -51,7 +51,7 @@ static inline XIndex XCCPageTableGoodCapacity(XIndex count) {
         }
     }
 #endif
-    return X_BUILD_ArrayCapacityMax-4;
+    return X_BUILD_CollectionCapacityMax-4;
 }
 
 XCCPageTable_s * _Nonnull XCCPageTableCreate(XIndex capacity);

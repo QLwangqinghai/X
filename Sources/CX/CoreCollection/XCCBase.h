@@ -18,11 +18,11 @@ extern "C" {
 
 #if CX_TARGET_RT_64_BIT
 
-#define X_BUILD_ArrayCapacityMax X_BUILD_UInt(0x8000000000000000)
+#define X_BUILD_CollectionCapacityMax X_BUILD_UInt(0x8000000000000000)
 
 #else
 
-#define X_BUILD_ArrayCapacityMax X_BUILD_UInt(0x80000000)
+#define X_BUILD_CollectionCapacityMax X_BUILD_UInt(0x80000000)
 
 #endif
 

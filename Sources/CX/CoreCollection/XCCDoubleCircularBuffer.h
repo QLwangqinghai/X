@@ -72,8 +72,8 @@ static inline XIndex XCCDoubleCircularBufferIndexToIndex(XCCDoubleCircularBuffer
 
 static inline XCCDoubleCircularBufferIndex __XCCDoubleCircularBufferAlignedCapacity(XIndex capacity) {
     XCCDoubleCircularBufferIndex result = {};
-    if (capacity >= X_BUILD_ArrayCapacityMax) {
-        result.page = (X_BUILD_ArrayCapacityMax / X_BUILD_DoubleCircularBufferPageCapacity);
+    if (capacity >= X_BUILD_CollectionCapacityMax) {
+        result.page = (X_BUILD_CollectionCapacityMax / X_BUILD_DoubleCircularBufferPageCapacity);
     } else if (capacity > X_BUILD_DoubleCircularBufferPageCapacity / 2) {
         result.page = (capacity + X_BUILD_DoubleCircularBufferPageCapacity - 1) / X_BUILD_DoubleCircularBufferPageCapacity;
     } else {
@@ -91,7 +91,7 @@ static inline XCCDoubleCircularBufferIndex __XCCDoubleCircularBufferAlignedCapac
 
 static inline XIndex __XCCDoubleCircularBufferGoodCapacity(XIndex capacity) {
     if (capacity > X_BUILD_DoubleCircularBufferPageCapacity) {
-        return X_BUILD_ArrayCapacityMax;
+        return X_BUILD_CollectionCapacityMax;
     } else {
         if (capacity <= 0) {
             return 0;

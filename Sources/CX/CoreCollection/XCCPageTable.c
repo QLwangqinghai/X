@@ -116,11 +116,11 @@ XCCPageTable_s * _Nullable XCCPageTableCopyByInsert(XCCPageTable_s * _Nullable t
         count = table->count;
     }
     XAssert(NULL != table, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(count + range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(count + range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location <= count, __func__, "");
-    XAssert(capacity <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(capacity <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(capacity >= count + range.length, __func__, "");
     
     if (0 == capacity) {
@@ -144,10 +144,10 @@ XCCPageTable_s * _Nullable XCCPageTableCopyByRemove(XCCPageTable_s * _Nullable t
         count = table->count;
     }
 
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location + range.length <= count, __func__, "");
-    XAssert(capacity <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(capacity <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(capacity >= count - range.length, __func__, "");
     
     if (0 == capacity) {
@@ -167,16 +167,16 @@ XCCPageTable_s * _Nullable XCCPageTableCopyByRemove(XCCPageTable_s * _Nullable t
 }
 
 void XCCPageTableInsert(XCCPageTable_s * _Nonnull table, XRange range) {
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(table->count + range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(table->count + range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location <= table->count, __func__, "");
     __XCCPageTableInsert(table, range);
 }
 void XCCPageTableRemove(XCCPageTable_s * _Nonnull table, XRange range) {
     XAssert(NULL != table, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location + range.length <= table->count, __func__, "");
     __XCCPageTableRemove(table, range);
 }

@@ -472,8 +472,8 @@ doMove:
 // It should only be called from places where that dispatch and check has already been done, or NSCCArray
 void XCCDoubleCircularBufferReplace(XCCDoubleCircularBuffer_s * _Nonnull buffer, XCCArrayPtr _Nullable source, XRange range) {
     XAssert(NULL != buffer, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location + range.length <= buffer->_base.count, __func__, "");
 
     XCCDoubleCircularBuffer_s * result = NULL;
@@ -506,16 +506,16 @@ void XCCDoubleCircularBufferReplace(XCCDoubleCircularBuffer_s * _Nonnull buffer,
 
 void XCCDoubleCircularBufferInsert(XCCDoubleCircularBuffer_s * _Nonnull buffer, XRange range) {
     XAssert(NULL != buffer, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(buffer->_base.count + range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(buffer->_base.count + range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location <= buffer->_base.count, __func__, "");
     __XCCDoubleCircularBufferResizeByInsert(buffer, range.location, range.length);
 }
 void XCCDoubleCircularBufferDelete(XCCDoubleCircularBuffer_s * _Nonnull buffer, XRange range) {
     XAssert(NULL != buffer, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location + range.length <= buffer->_base.count, __func__, "");
     __XCCDoubleCircularBufferResizeByRemove(buffer, range.location, range.length);
 }

@@ -265,21 +265,21 @@ static inline void __XCCCircularBufferRemoveResize(XCCCircularBuffer_s * _Nonnul
 
 void XCCCircularBufferInsertResize(XCCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex capacity) {
     XAssert(NULL != buffer, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(buffer->_base.count + range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(buffer->_base.count + range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location <= buffer->_base.count, __func__, "");
-    XAssert(capacity <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(capacity <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(capacity >= buffer->_base.count + range.length, __func__, "");
 
     __XCCCircularBufferInsertResize(buffer, range, capacity);
 }
 void XCCCircularBufferRemoveResize(XCCCircularBuffer_s * _Nonnull buffer, XRange range, XIndex capacity) {
     XAssert(NULL != buffer, __func__, "");
-    XAssert(range.location < X_BUILD_ArrayCapacityMax, __func__, "");
-    XAssert(range.length <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(range.location < X_BUILD_CollectionCapacityMax, __func__, "");
+    XAssert(range.length <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(range.location + range.length <= buffer->_base.count, __func__, "");
-    XAssert(capacity <= X_BUILD_ArrayCapacityMax, __func__, "");
+    XAssert(capacity <= X_BUILD_CollectionCapacityMax, __func__, "");
     XAssert(capacity >= buffer->_base.count - range.length, __func__, "");
     
     __XCCCircularBufferRemoveResize(buffer, range, capacity);
