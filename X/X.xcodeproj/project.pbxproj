@@ -37,6 +37,7 @@
 		D6F4A413248E58AC007923C9 /* XCCDoubleCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */; };
 		D6F4A416248E6185007923C9 /* XCCUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A415248E6185007923C9 /* XCCUtil.c */; };
 		D6F4A419248E626B007923C9 /* XCCCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */; };
+		D6F4A42E248F3905007923C9 /* XCCPageTable.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A42D248F3905007923C9 /* XCCPageTable.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -112,6 +113,8 @@
 		D6F4A415248E6185007923C9 /* XCCUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XCCUtil.c; sourceTree = "<group>"; };
 		D6F4A417248E626B007923C9 /* XCCCircularBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCCircularBuffer.h; sourceTree = "<group>"; };
 		D6F4A418248E626B007923C9 /* XCCCircularBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCCircularBuffer.c; sourceTree = "<group>"; };
+		D6F4A42C248F3905007923C9 /* XCCPageTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCPageTable.h; sourceTree = "<group>"; };
+		D6F4A42D248F3905007923C9 /* XCCPageTable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCPageTable.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -274,6 +277,8 @@
 				D6F4A412248E58AC007923C9 /* XCCDoubleCircularBuffer.c */,
 				D6F4A3DC248E078E007923C9 /* XCCArray.h */,
 				D6F4A3DD248E078E007923C9 /* XCCArray.c */,
+				D6F4A42C248F3905007923C9 /* XCCPageTable.h */,
+				D6F4A42D248F3905007923C9 /* XCCPageTable.c */,
 			);
 			path = CoreCollection;
 			sourceTree = "<group>";
@@ -379,6 +384,7 @@
 			files = (
 				D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */,
 				D66E04F4248E927600B1A91D /* XCCBuffer.c in Sources */,
+				D6F4A42E248F3905007923C9 /* XCCPageTable.c in Sources */,
 				D6447016244D757D009E4F57 /* XRef.c in Sources */,
 				D6447010244D7261009E4F57 /* XProcess.c in Sources */,
 				D6446FDB244D7254009E4F57 /* ViewController.mm in Sources */,

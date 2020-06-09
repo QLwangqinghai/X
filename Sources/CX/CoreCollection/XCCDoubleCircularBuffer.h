@@ -27,11 +27,11 @@ typedef struct __XCCDoubleCircularBufferIndex {
 #else
 
 //256k
-#define X_BUILD_DoubleCircularBufferPageCapacity X_BUILD_UInt(0x40000)
+#define X_BUILD_DoubleCircularBufferPageCapacity X_BUILD_UInt(0x10000)
 
 typedef struct __XCCDoubleCircularBufferIndex {
-    XIndex page: 14;
-    XIndex item: 18;
+    XIndex page: 16;
+    XIndex item: 16;
 } XCCDoubleCircularBufferIndex;
 
 #endif
@@ -105,13 +105,10 @@ static inline XIndex __XCCDoubleCircularBufferGoodCapacity(XIndex capacity) {
     }
 }
 
-
 typedef struct __XCCDoubleCircularBuffer {
     XCCArray_s _base;
     XIndex capacity;// ==0 时 _storage = NULL; <= X_BUILD_DoubleCircularBufferPageCapacity时
-    XCCDoubleCircularBufferIndex offset;
-    XIndex pageCount;
-    XIndex pageCapacity;
+    XIndex offset;
     XUInt8 * _Nullable _storage;
 } XCCDoubleCircularBuffer_s;
 

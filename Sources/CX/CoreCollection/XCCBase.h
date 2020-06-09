@@ -31,7 +31,6 @@ extern "C" {
 
 
 typedef struct __XCCBase {
-    _Atomic(XFastUInt) counter;
     XIndex cid: 10;
     XIndex elementSize: (XUIntBitsCount - 10);
     XIndex count;
@@ -59,6 +58,8 @@ typedef void (*XCCArrayEnumerateCallBack_f)(XPtr _Nullable context, XCCArraySlic
 
 
 
+
+XUInt8 * _Nonnull XCCAllocate(XSize elementSize, XIndex capacity);
 
 
 

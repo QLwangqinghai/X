@@ -10,20 +10,11 @@
 #include "XMemory.h"
 #include "XCCUtil.h"
 
-
-
-static inline XUInt8 * _Nonnull __XCBufferCreate(XIndex elementSize, XIndex capacity) {
-    XUInt8 * newTable = XAlignedAllocate(elementSize * capacity, 64);
-    assert(newTable);
-    memset(newTable, 0, elementSize * capacity);
-    return newTable;
-}
-
 static inline XUInt8 * _Nullable __XCCCircularBufferStorageCreate(XIndex elementSize, XIndex capacity) {
     if (0 == capacity) {
         return NULL;
     }
-    return __XCBufferCreate(elementSize, capacity);
+    return XCCAllocate(elementSize, capacity);
 }
 static inline void __XCCCircularBufferStorageDestroy(XUInt8 * _Nullable page) {
     if (page) {
