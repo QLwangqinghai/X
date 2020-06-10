@@ -508,3 +508,108 @@ void XRefDescribe(XRef _Nonnull obj, _XDescriptionBuffer _Nonnull buffer) {
 
 
 
+
+//unsigned int hash_BPHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    while(*str){
+//        hash = (hash << 7) ^ (*str++);
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_FNVHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    while(*str){
+//        hash = (hash * 0x811C9DC5) ^ (*str++);
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_BKDRHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    while(*str){
+//        hash = (hash * 131) + (*str++); // 31 131 1313 13131 131313 etc...
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_DJBHash(unsigned char *str){
+//    unsigned int hash = 5381;
+//    while(*str){
+//        hash += ((hash << 5) + (*str++));
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_JSHash(unsigned char *str){
+//    unsigned int hash = 1315423911;
+//    while(*str){
+//        hash ^= ((hash << 5) + (hash >> 2) + (*str++));
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_DEKHash(unsigned char *str){
+//    unsigned int hash = strlen(str);
+//    while(*str){
+//        hash = ((hash << 5) ^ (hash >> 27)) ^ (*str++);
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_SDBMHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    while(*str){
+//        hash = (hash << 6) + (hash << 16) + (*str++) - hash;
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_RSHash(unsigned char *str){
+//    unsigned int a = 63689;
+//    unsigned int hash = 0;
+//    while(*str){
+//        hash = hash * a + (*str++);
+//        a *= 378551;
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_APHash(unsigned char *str){
+//    unsigned int hash = 0;   //0x00000000, 0xAAAAAAAA
+//    unsigned int flag = 0;
+//    while(*str){
+//        if(flag&1){
+//            hash ^= (~((hash << 11) ^ (*str++) ^ (hash >> 5)));
+//        }
+//        else{
+//            hash ^= ((hash << 7) ^ (*str++) ^ (hash >> 3));
+//        }
+//        flag++;
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_PJWHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    unsigned int test = 0;
+//    while(*str){
+//        hash = (hash << 4) + (*str++);
+//        if((test = hash & 0xF0000000) != 0){
+//            hash = ((hash ^ (test >> 24)) & 0x0FFFFFFF);
+//        }
+//    }
+//    return hash;
+//}
+//
+//unsigned int hash_ELFHash(unsigned char *str){
+//    unsigned int hash = 0;
+//    unsigned int test = 0;
+//    while(*str){
+//        hash = (hash << 4) + (*str++);
+//        if((test = hash & 0xF0000000) != 0){
+//            hash = ((hash ^ (test >> 24)) & (~test));
+//        }
+//    }
+//    return hash;
+//}
