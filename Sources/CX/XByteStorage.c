@@ -10,7 +10,28 @@
 #include "internal/XAllocator.h"
 #include "XMemory.h"
 #include "internal/XClass.h"
+#include "internal/XLock.h"
 
+
+static _XWeakTableManager * _Nullable __XWeakTableManagerShared = NULL;
+void __XWeakTableManagerOnceBlockFunc(void) {
+    
+}
+_XWeakTableManager * _Nonnull _XWeakTableManagerShared(void) {
+    static pthread_once_t token = PTHREAD_ONCE_INIT;
+    pthread_once(&token, &__XWeakTableManagerOnceBlockFunc);
+    assert(__XWeakTableManagerShared);
+    return __XWeakTableManagerShared;
+}
+
+
+
+void _XByteStorageLock(_XByteStorage * _Nonnull storage) {
+    
+}
+void _XByteStorageUnlock(_XByteStorage * _Nonnull storage) {
+    
+}
 
 #pragma mark - base
 

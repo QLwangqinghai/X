@@ -13,6 +13,10 @@
 #include "XRuntimeInternal.h"
 
 
+XHashCode _XByteStorageContentHash(const XUInt8 * _Nullable ptr, XUInt32 length);
+
+
+
 XHashCode _XNumberUnpackedHash(_XNumber * _Nonnull obj);
 XBool _XNumberUnpackedEqual(XNumberUnpacked_t * _Nonnull lhs, XNumberUnpacked_t * _Nonnull rhs);
 void _XNumberUnpackedDescribe(XNumberUnpacked_t * _Nonnull obj, _XDescriptionBuffer _Nonnull buffer);

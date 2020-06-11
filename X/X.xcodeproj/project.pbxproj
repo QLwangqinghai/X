@@ -29,6 +29,8 @@
 		D647EC6E24584E8F008E1D15 /* XDate.c in Sources */ = {isa = PBXBuildFile; fileRef = D647EC6D24584E8F008E1D15 /* XDate.c */; };
 		D66E04F4248E927600B1A91D /* XCCBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04F3248E927600B1A91D /* XCCBuffer.c */; };
 		D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = D681FD7B2456D392001B28EB /* XByteStorage.c */; };
+		D68CDBE32492017C005D4958 /* XCCHasher.c in Sources */ = {isa = PBXBuildFile; fileRef = D68CDBE22492017C005D4958 /* XCCHasher.c */; };
+		D68CDBEB24925BBE005D4958 /* XLock.c in Sources */ = {isa = PBXBuildFile; fileRef = D68CDBEA24925BBE005D4958 /* XLock.c */; };
 		D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE08B92463AFBD008854F8 /* CXTester.m */; };
 		D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3CF248B66BB007923C9 /* XCoreCollection.c */; };
 		D6F4A3D8248E04D4007923C9 /* XCCBase.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A3D4248E04D4007923C9 /* XCCBase.c */; };
@@ -40,7 +42,6 @@
 		D6F4A42E248F3905007923C9 /* XCCPageTable.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A42D248F3905007923C9 /* XCCPageTable.c */; };
 		D6F4A438248FAF6E007923C9 /* XCCMap.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A437248FAF6E007923C9 /* XCCMap.c */; };
 		D6F4A4782490BEB7007923C9 /* XHash.c in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A4772490BEB6007923C9 /* XHash.c */; };
-		D6F4A47B2490BEC6007923C9 /* MurmurHash3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6F4A47A2490BEC6007923C9 /* MurmurHash3.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -100,6 +101,10 @@
 		D66E04F2248E927600B1A91D /* XCCBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCBuffer.h; sourceTree = "<group>"; };
 		D66E04F3248E927600B1A91D /* XCCBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCBuffer.c; sourceTree = "<group>"; };
 		D681FD7B2456D392001B28EB /* XByteStorage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XByteStorage.c; sourceTree = "<group>"; };
+		D68CDBE12492017C005D4958 /* XCCHasher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCHasher.h; sourceTree = "<group>"; };
+		D68CDBE22492017C005D4958 /* XCCHasher.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCHasher.c; sourceTree = "<group>"; };
+		D68CDBE924925BBE005D4958 /* XLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XLock.h; sourceTree = "<group>"; };
+		D68CDBEA24925BBE005D4958 /* XLock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XLock.c; sourceTree = "<group>"; };
 		D6CE08B82463AFBD008854F8 /* CXTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CXTester.h; sourceTree = "<group>"; };
 		D6CE08B92463AFBD008854F8 /* CXTester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CXTester.m; sourceTree = "<group>"; };
 		D6F4A3CE248B66BB007923C9 /* XCoreCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCoreCollection.h; sourceTree = "<group>"; };
@@ -122,8 +127,6 @@
 		D6F4A437248FAF6E007923C9 /* XCCMap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCMap.c; sourceTree = "<group>"; };
 		D6F4A4762490BEB6007923C9 /* XHash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XHash.h; sourceTree = "<group>"; };
 		D6F4A4772490BEB6007923C9 /* XHash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XHash.c; sourceTree = "<group>"; };
-		D6F4A4792490BEC6007923C9 /* MurmurHash3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MurmurHash3.h; sourceTree = "<group>"; };
-		D6F4A47A2490BEC6007923C9 /* MurmurHash3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MurmurHash3.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +214,7 @@
 				D6447004244D7261009E4F57 /* XRuntime.c */,
 				D6446FF0244D7261009E4F57 /* XType.c */,
 				77C7F5C92476C53D00B7EC3C /* XWeakStorage.c */,
+				D68CDBEA24925BBE005D4958 /* XLock.c */,
 				D6446FF1244D7261009E4F57 /* include */,
 				D6446FFE244D7261009E4F57 /* internal */,
 				D6447002244D7261009E4F57 /* private */,
@@ -221,8 +225,6 @@
 		D6446FF1244D7261009E4F57 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				D6F4A47A2490BEC6007923C9 /* MurmurHash3.cpp */,
-				D6F4A4792490BEC6007923C9 /* MurmurHash3.h */,
 				D6446FF2244D7261009E4F57 /* CX.h */,
 				D6446FF3244D7261009E4F57 /* XDevice.h */,
 				D6446FF4244D7261009E4F57 /* CXTargetConditionals.h */,
@@ -245,6 +247,7 @@
 				D6447001244D7261009E4F57 /* XRuntimeInternal.h */,
 				77C7F5C524742B4F00B7EC3C /* XClass.h */,
 				77C7F5CB247A12BB00B7EC3C /* XRefInternal.h */,
+				D68CDBE924925BBE005D4958 /* XLock.h */,
 			);
 			path = internal;
 			sourceTree = "<group>";
@@ -294,6 +297,8 @@
 				D6F4A42D248F3905007923C9 /* XCCPageTable.c */,
 				D6F4A436248FAF6E007923C9 /* XCCMap.h */,
 				D6F4A437248FAF6E007923C9 /* XCCMap.c */,
+				D68CDBE12492017C005D4958 /* XCCHasher.h */,
+				D68CDBE22492017C005D4958 /* XCCHasher.c */,
 			);
 			path = CoreCollection;
 			sourceTree = "<group>";
@@ -406,6 +411,7 @@
 				D6446FDB244D7254009E4F57 /* ViewController.mm in Sources */,
 				D6F4A3E5248E0BB2007923C9 /* XCollectionBase.c in Sources */,
 				D6F4A3D8248E04D4007923C9 /* XCCBase.c in Sources */,
+				D68CDBE32492017C005D4958 /* XCCHasher.c in Sources */,
 				77C7F5CA2476C53D00B7EC3C /* XWeakStorage.c in Sources */,
 				D6447009244D7261009E4F57 /* XMemory.c in Sources */,
 				D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */,
@@ -413,7 +419,6 @@
 				D644700B244D7261009E4F57 /* XType.c in Sources */,
 				D6446FE3244D7256009E4F57 /* main.m in Sources */,
 				D6F4A416248E6185007923C9 /* XCCUtil.c in Sources */,
-				D6F4A47B2490BEC6007923C9 /* MurmurHash3.cpp in Sources */,
 				D6447007244D7261009E4F57 /* XAllocator.c in Sources */,
 				D6F4A413248E58AC007923C9 /* XCCDoubleCircularBuffer.c in Sources */,
 				D6F4A419248E626B007923C9 /* XCCCircularBuffer.c in Sources */,
@@ -422,6 +427,7 @@
 				D6F4A3DE248E078E007923C9 /* XCCArray.c in Sources */,
 				D6CE08BA2463AFBD008854F8 /* CXTester.m in Sources */,
 				D6447014244D7306009E4F57 /* CXX.cpp in Sources */,
+				D68CDBEB24925BBE005D4958 /* XLock.c in Sources */,
 				D6447008244D7261009E4F57 /* CXInit.c in Sources */,
 				D644700E244D7261009E4F57 /* XRuntime.c in Sources */,
 				D6F4A438248FAF6E007923C9 /* XCCMap.c in Sources */,

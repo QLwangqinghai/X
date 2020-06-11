@@ -104,117 +104,6 @@ XClass _Nonnull XRefGetClass(XRef _Nonnull ref) {
 }
 
 
-
-
-
-#define HASHFACTOR 2654435761U
-
-XHashCode _XHashUInt64(XUInt64 i) {
-    return (XHashCode)(i);
-}
-XHashCode _XHashSInt64(XSInt64 i) {
-    XUInt64 u = 0;
-    if (i < 0) {
-        u = (XUInt64)(i * -1);
-    } else {
-        u = (XUInt64)i;
-    }
-    return _XHashUInt64(u);
-}
-XHashCode _XHashFloat64(XFloat64 d) {
-    //转化成正数
-    const XFloat64 positive = (d < 0) ? -d : d;
-    
-    //四舍五入
-    const XFloat64 positiveInt = floor(positive + 0.5);
-    
-    //小数部分
-    const XFloat64 fractional = (positive - positiveInt) * 18446744073709551616.0L;
-
-    XUInt64 result = (XUInt64)fmod(positiveInt, 18446744073709551616.0L);
-    if (fractional < 0) {
-        result += -((XUInt64)(fabs(fractional)));
-    } else if (fractional > 0) {
-        result += (XUInt64)fractional;
-    }
-    return (XUInt32)result;
-}
-
-#define ELF_STEP32(B) T1 = (H << 4) + B; T2 = T1 & 0xF0000000; if (T2) T1 ^= (T2 >> 24); T1 &= (~T2); H = T1;
-#define ELF_STEP64(B) T1 = (H << 4) + B; T2 = T1 & 0xF000000000000000ULL; if (T2) T1 ^= (T2 >> 56); T1 &= (~T2); H = T1;
-
-#if CX_TARGET_RT_64_BIT
-    #define ELF_STEP ELF_STEP64
-#else
-    #define ELF_STEP ELF_STEP32
-#endif
-
-
-XUInt32 _XELFHashBytes(XUInt8 * _Nullable bytes, XUInt32 length) {
-    if (length > 0) {
-        assert(bytes);
-    }
-    XUInt32 H = 0, T1, T2;
-    XUInt32 rem = length;
-    while (3 < rem) {
-    ELF_STEP32(bytes[length - rem]);
-    ELF_STEP32(bytes[length - rem + 1]);
-    ELF_STEP32(bytes[length - rem + 2]);
-    ELF_STEP32(bytes[length - rem + 3]);
-    rem -= 4;
-    }
-    switch (rem) {
-    case 3:  ELF_STEP32(bytes[length - 3]);
-    case 2:  ELF_STEP32(bytes[length - 2]);
-    case 1:  ELF_STEP32(bytes[length - 1]);
-    case 0:  ;
-    }
-    return H;
-}
-
-XHashCode XHash(XUInt8 * _Nullable bytes, XUInt length) {
-    if (length > 0) {
-        assert(bytes);
-    } else {
-        return 0;
-    }
-    XUInt H = 0, T1, T2;
-    XUInt rem = MIN(256, length);
-    
-    XUInt8 * lengthBytes = (XUInt8 *)(&length);
-    ELF_STEP(lengthBytes[0]);
-    ELF_STEP(lengthBytes[1]);
-    ELF_STEP(lengthBytes[2]);
-    ELF_STEP(lengthBytes[3]);
-
-#if CX_TARGET_RT_64_BIT
-    ELF_STEP(lengthBytes[4]);
-    ELF_STEP(lengthBytes[5]);
-    ELF_STEP(lengthBytes[6]);
-    ELF_STEP(lengthBytes[7]);
-#endif
-    
-    while (3 < rem) {
-        ELF_STEP(bytes[length - rem]);
-        ELF_STEP(bytes[length - rem + 1]);
-        ELF_STEP(bytes[length - rem + 2]);
-        ELF_STEP(bytes[length - rem + 3]);
-        rem -= 4;
-    }
-    switch (rem) {
-        case 3:  ELF_STEP(bytes[length - 3]);
-        case 2:  ELF_STEP(bytes[length - 2]);
-        case 1:  ELF_STEP(bytes[length - 1]);
-        case 0:  ;
-    }
-    return H;
-}
-
-#undef ELF_STEP32
-#undef ELF_STEP64
-#undef ELF_STEP
-
-
 XCompressedType XHeapRefGetCompressedType(XHeapRef _Nonnull ref) {
     XUInt info = _XRefGetRcInfo(ref);
     if((info & X_BUILD_CompressedRcMask) == X_BUILD_CompressedRcFlag) {
@@ -312,50 +201,50 @@ static const XType_s * _Nonnull _XHeapRefGetNoncompressedType(XHeapRef _Nonnull 
 }
 
 
-XHashCode XRefHash(XRef _Nonnull obj) {
-    XAssert(NULL != obj, __func__, "");
-    XIndex typeId = XRefGetTypeId(obj);
-    if (typeId == 0) {
-        return _XClassHash(obj);
-    } else if (typeId < X_BUILD_TypeId_CompressedTypeMin) {
-        //常量
-        return XTaggedConstantValueTable[(uintptr_t)obj - X_BUILD_TaggedConstantValueMin].hashCode;
-    } if (typeId <= X_BUILD_TypeId_Max) {
-        switch (typeId) {
-            case X_BUILD_TypeId_Number: {
-                return false;
-            }
-                break;
-            case X_BUILD_TypeId_Date: {
-                return false;
-                
-            }
-                break;
-            case X_BUILD_TypeId_String: {
-                return false;
-                
-            }
-                break;
-            case X_BUILD_TypeId_Data: {
-                return false;
-                
-            }
-                break;
-            case X_BUILD_TypeId_Value: {
-                return false;
-                
-            }
-                break;
-            default: {
-                return _XAddressHash(obj);
-            }
-                break;
-        }
-
-    } else {
-        //Object
-        return _XObjectHash(obj);
-    }
+void XRefHash(XRef _Nonnull obj, XHasher _Nonnull hasher) {
+//    XAssert(NULL != obj, __func__, "");
+//    XIndex typeId = XRefGetTypeId(obj);
+//    if (typeId == 0) {
+//        return _XClassHash(obj);
+//    } else if (typeId < X_BUILD_TypeId_CompressedTypeMin) {
+//        //常量
+//        return XTaggedConstantValueTable[(uintptr_t)obj - X_BUILD_TaggedConstantValueMin].hashCode;
+//    } if (typeId <= X_BUILD_TypeId_Max) {
+//        switch (typeId) {
+//            case X_BUILD_TypeId_Number: {
+//                return false;
+//            }
+//                break;
+//            case X_BUILD_TypeId_Date: {
+//                return false;
+//                
+//            }
+//                break;
+//            case X_BUILD_TypeId_String: {
+//                return false;
+//                
+//            }
+//                break;
+//            case X_BUILD_TypeId_Data: {
+//                return false;
+//                
+//            }
+//                break;
+//            case X_BUILD_TypeId_Value: {
+//                return false;
+//                
+//            }
+//                break;
+//            default: {
+//                return XAddressHash(obj);
+//            }
+//                break;
+//        }
+//
+//    } else {
+//        //Object
+//        _XObjectHash(obj);
+//    }
 }
 XBool XRefEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {
     XAssert(NULL != lhs, __func__, "");
@@ -509,107 +398,4 @@ void XRefDescribe(XRef _Nonnull obj, _XDescriptionBuffer _Nonnull buffer) {
 
 
 
-//unsigned int hash_BPHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    while(*str){
-//        hash = (hash << 7) ^ (*str++);
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_FNVHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    while(*str){
-//        hash = (hash * 0x811C9DC5) ^ (*str++);
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_BKDRHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    while(*str){
-//        hash = (hash * 131) + (*str++); // 31 131 1313 13131 131313 etc...
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_DJBHash(unsigned char *str){
-//    unsigned int hash = 5381;
-//    while(*str){
-//        hash += ((hash << 5) + (*str++));
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_JSHash(unsigned char *str){
-//    unsigned int hash = 1315423911;
-//    while(*str){
-//        hash ^= ((hash << 5) + (hash >> 2) + (*str++));
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_DEKHash(unsigned char *str){
-//    unsigned int hash = strlen(str);
-//    while(*str){
-//        hash = ((hash << 5) ^ (hash >> 27)) ^ (*str++);
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_SDBMHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    while(*str){
-//        hash = (hash << 6) + (hash << 16) + (*str++) - hash;
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_RSHash(unsigned char *str){
-//    unsigned int a = 63689;
-//    unsigned int hash = 0;
-//    while(*str){
-//        hash = hash * a + (*str++);
-//        a *= 378551;
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_APHash(unsigned char *str){
-//    unsigned int hash = 0;   //0x00000000, 0xAAAAAAAA
-//    unsigned int flag = 0;
-//    while(*str){
-//        if(flag&1){
-//            hash ^= (~((hash << 11) ^ (*str++) ^ (hash >> 5)));
-//        }
-//        else{
-//            hash ^= ((hash << 7) ^ (*str++) ^ (hash >> 3));
-//        }
-//        flag++;
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_PJWHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    unsigned int test = 0;
-//    while(*str){
-//        hash = (hash << 4) + (*str++);
-//        if((test = hash & 0xF0000000) != 0){
-//            hash = ((hash ^ (test >> 24)) & 0x0FFFFFFF);
-//        }
-//    }
-//    return hash;
-//}
-//
-//unsigned int hash_ELFHash(unsigned char *str){
-//    unsigned int hash = 0;
-//    unsigned int test = 0;
-//    while(*str){
-//        hash = (hash << 4) + (*str++);
-//        if((test = hash & 0xF0000000) != 0){
-//            hash = ((hash ^ (test >> 24)) & (~test));
-//        }
-//    }
-//    return hash;
-//}
+

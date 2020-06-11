@@ -268,5 +268,5 @@ XHashCode XDateHash(XRef _Nonnull ref) {
     XAssert(NULL != ref, __func__, "ref is NULL");
     XTimeInterval content = 0;
     __XDateUnpack(ref, &content, __func__);
-    return _XHashSInt64(content);
+    return XHashSInt64(content);
 }

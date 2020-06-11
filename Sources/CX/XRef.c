@@ -11,6 +11,20 @@
 #include "internal/XAllocator.h"
 #include "internal/XClass.h"
 
+XHashCode _XByteStorageContentHash(const XUInt8 * _Nullable ptr, XUInt32 length) {
+#if CX_TARGET_RT_64_BIT
+    XUInt code = XMurmurHash64((const XPtr)ptr, length, 97);
+#else
+    XUInt code = XMurmurHash32((const XPtr)ptr, length, 97);
+#endif
+    if (XUIntMax == code) {
+        code = 0;
+    }
+    return code;
+}
+
+
+
 //XBool XStringEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {return false;};
 //XBool XDataEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {return false;};
 //XBool XDateEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {return false;};

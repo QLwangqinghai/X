@@ -16,6 +16,9 @@ extern "C" {
 #include "XAllocator.h"
 #include "XAtomic.h"
 #include "XRef.h"
+#include "XHash.h"
+#include "XLock.h"
+
 
 typedef XPtr _XDescriptionBuffer;
 
@@ -351,18 +354,7 @@ extern XSize _XSetContentDeinit(XPtr _Nonnull content);
 
 
 extern void _XRefDeinit(XRef _Nonnull obj);
-
-
-#pragma mark - hash
     
-extern XHashCode _XHashUInt64(XUInt64 i);
-extern XHashCode _XHashSInt64(XSInt64 i);
-extern XHashCode _XHashFloat64(XFloat64 d);
-extern XUInt32 _XELFHashBytes(XUInt8 * _Nullable bytes, XUInt32 length);
-
-static inline XHashCode _XAddressHash(XPtr _Nonnull obj) {
-    return (XHashCode)(((uintptr_t)obj) >> 4);
-};
     
 
 #pragma mark - weak
@@ -377,6 +369,13 @@ extern _XWeakTable * _Nonnull _XWeakTableGet(uintptr_t address);
 extern void _XWeakTableLock(_XWeakTable * _Nonnull table);
 extern void _XWeakTableUnlock(_XWeakTable * _Nonnull table);
 
+#pragma mark - Hasher
+
+typedef struct __XHasher {
+    XIndex cid: 10;
+    XIndex elementSize: (XUIntBitsCount - 10);
+    XIndex count;
+} XHasher_s;
 
 #if defined(__cplusplus)
 }  // extern C

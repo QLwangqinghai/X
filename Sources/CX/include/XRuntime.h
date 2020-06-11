@@ -27,10 +27,13 @@ extern "C" {
 #endif
 
 
+struct __XHasher;
+typedef struct __XHasher * XHasher;
+
 typedef XPtr _XDescriptionBuffer;
 typedef XComparisonResult (*XRefCompare_f)(XRef _Nonnull lhs, XRef _Nonnull rhs);
 
-typedef XHashCode (*XRefHashCode_f)(XRef _Nonnull obj);
+typedef void (*XRefHashCode_f)(XRef _Nonnull obj, XHasher _Nonnull hasher);
 typedef XBool (*XRefEqual_f)(XRef _Nonnull lhs, XRef _Nonnull rhs);
 typedef void (*XRefDeinit_f)(XRef _Nonnull obj);
 typedef void (*XRefDescribe_f)(XRef _Nonnull obj, _XDescriptionBuffer _Nonnull buffer);
@@ -75,10 +78,9 @@ typedef struct {
 } XObjectType_s;
 
 
-
 #pragma mark - api
 
-extern XHashCode XRefHash(XRef _Nonnull obj);
+extern void XRefHash(XRef _Nonnull obj, XHasher _Nonnull hasher);
 extern XBool XRefEqual(XRef _Nonnull lhs, XRef _Nonnull rhs);
 extern void XRefDescribe(XRef _Nonnull obj, _XDescriptionBuffer _Nonnull buffer);
 
@@ -153,6 +155,28 @@ extern const XTaggedType XTaggedTypeMax;
 extern XIndex XRefGetTypeId(XRef _Nonnull ref);
 /// TODO: delete
 extern XCompressedType XHeapRefGetCompressedType(XHeapRef _Nonnull ref);
+
+
+#pragma mark - XHasher
+
+extern void XHasherCombineUInt64(const XHasher _Nonnull hasher, XUInt64 value);
+extern void XHasherCombineSInt64(const XHasher _Nonnull hasher, XSInt64 value);
+
+extern void XHasherCombineUInt32(const XHasher _Nonnull hasher, XUInt32 value);
+extern void XHasherCombineSInt32(const XHasher _Nonnull hasher, XSInt32 value);
+
+extern void XHasherCombineUInt16(const XHasher _Nonnull hasher, XUInt16 value);
+extern void XHasherCombineSInt16(const XHasher _Nonnull hasher, XSInt16 value);
+
+extern void XHasherCombineUInt8(const XHasher _Nonnull hasher, XUInt8 value);
+extern void XHasherCombineSInt8(const XHasher _Nonnull hasher, XSInt8 value);
+
+extern void XHasherCombineUInt(const XHasher _Nonnull hasher, XUInt value);
+extern void XHasherCombineSInt(const XHasher _Nonnull hasher, XSInt value);
+
+extern void XHasherCombineFloat64(const XHasher _Nonnull hasher, XFloat64 value);
+extern void XHasherCombineFloat32(const XHasher _Nonnull hasher, XFloat32 value);
+
 
 
 extern XHashCode XHash(XUInt8 * _Nullable bytes, XUInt length);

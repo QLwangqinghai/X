@@ -36,7 +36,7 @@ XIndex _XTypeIdOfClass(const XType_s * _Nonnull cls) {
 
 
 XHashCode _XClassHash(XRef _Nonnull obj) {
-    return _XAddressHash(obj);
+    return XAddressHash(obj);
 }
 XBool _XClassEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {
     return lhs == rhs;
@@ -90,7 +90,7 @@ void _XCollectionDescribe(XRef _Nonnull obj, _XDescriptionBuffer _Nonnull buffer
 
 XHashCode _XObjectHash(XRef _Nonnull obj) {
     /*const XObjectType_s * type = */_XObjectGetClass(obj, __func__);
-    return _XAddressHash(obj);
+    return XAddressHash(obj);
 }
 XBool _XObjectEqual(XRef _Nonnull lhs, XRef _Nonnull rhs) {
     /*const XObjectType_s * type = */_XObjectGetClass(lhs, __func__);

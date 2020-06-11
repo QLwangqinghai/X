@@ -1589,7 +1589,7 @@ XHashCode XNumberHash(XRef _Nonnull ref) {
         case XNumberTypeSInt32:
         case XNumberTypeSInt64: {
             XSInt64 s = content.bits.s;
-            return _XHashSInt64(s);
+            return XHashSInt64(s);
         }
             break;
         case XNumberTypeUInt8:
@@ -1597,13 +1597,13 @@ XHashCode XNumberHash(XRef _Nonnull ref) {
         case XNumberTypeUInt32:
         case XNumberTypeUInt64: {
             XUInt64 u = content.bits.u;
-            return _XHashUInt64(u);
+            return XHashUInt64(u);
         }
             break;
         case XNumberTypeFloat32:
         case XNumberTypeFloat64: {
             XFloat64 f = content.bits.f;
-            return _XHashFloat64(f);
+            return XHashFloat64(f);
         }
             break;
         default: {
