@@ -185,42 +185,28 @@ typedef struct {
 } _XBuffer;
 
 typedef struct {
-    XUInt32 length;
-    XUInt32 __xx;
-} _XByteStorageContent_t;
+    XUInt flag: 1;//0: inline, 1:_XByteStorageContentLarge_t
+    XUInt load: (XUIntBitsCount - 1);
+} _XByteStorageContentBase_t;
 
-typedef struct {
-    XUInt32 length;
-    XUInt32 offset;
-    _Atomic(XFastUInt) hashCode;
-    _XBuffer * _Nonnull buffer;
-} _XByteStorageContentLarge_t;
-
-typedef struct {
-    XUInt32 length;
-    XUInt8 extended[4];/* 可能有0、16、48、112、 240 5种可能 */
-} _XByteStorageContentSmall_t;
-
-typedef struct {
-    XUInt8 content[sizeof(XUInt)];//content[0] 标识长度
-} _XByteStorageNano_t;
-    
 #define _XByteStorageContentBufferSizeMin X_BUILD_UInt(245)
 
 typedef struct {
     XUInt isString: 1;
     XUInt contentType: (XUIntBitsCount - 1);//0 tagged; 1 small; 2 large
+    XSize length;
     union XByteStorageUnpackedContent_u {
-        _XByteStorageContentLarge_t * _Nonnull large;
-        _XByteStorageContentSmall_t * _Nonnull small;
-        _XByteStorageNano_t nano;
+        _XBuffer * _Nonnull large;
+        XUInt8 * _Nonnull small;
+        XUInt8 nano[sizeof(XUInt)];
         XUInt __nano;
     } content;
 } XByteStorageUnpacked_t;
 
 typedef struct {
     _XObjectCompressedBase _runtime;
-    _XByteStorageContent_t content;
+    _XByteStorageContentBase_t content;
+    XUInt8 extended[0];// 32(8, )  64(16, )
 } _XByteStorage;
 
 //typedef void (*XCustomRelease_f)(XPtr _Nullable context, XPtr _Nonnull content, XUInt length);

@@ -11,23 +11,36 @@
 #include "XMemory.h"
 #include "internal/XClass.h"
 #include "internal/XLock.h"
+#include <pthread.h>
+
+_Static_assert(sizeof(XSpinlock_t) == sizeof(XUInt32), "error");
 
 
-static _XWeakTableManager * _Nullable __XWeakTableManagerShared = NULL;
-void __XWeakTableManagerOnceBlockFunc(void) {
-    
+static XSpinlockTable_s * _Nullable __XByteStorageLockTableShared = NULL;
+void __XByteStorageLockTableOnceBlockFunc(void) {
+    __XByteStorageLockTableShared = XSpinlockTableCreate(499);
 }
-_XWeakTableManager * _Nonnull _XWeakTableManagerShared(void) {
+XSpinlockTable_s * _Nonnull _XByteStorageLockTableShared(void) {
     static pthread_once_t token = PTHREAD_ONCE_INIT;
-    pthread_once(&token, &__XWeakTableManagerOnceBlockFunc);
-    assert(__XWeakTableManagerShared);
-    return __XWeakTableManagerShared;
+    pthread_once(&token, &__XByteStorageLockTableOnceBlockFunc);
+    assert(__XByteStorageLockTableShared);
+    return __XByteStorageLockTableShared;
 }
 
+void _XByteStorageGetRetainedBuffer(_XByteStorage * _Nonnull storage) {
+    XSpinlockTable_s * table = _XByteStorageLockTableShared();
+    XIndex h = XAddressHash(storage);
 
+    XSpinlock_t * lock = XSpinlockTableGet(table, h % table->capacity);
+    XSpinlockLock(lock);
+}
 
 void _XByteStorageLock(_XByteStorage * _Nonnull storage) {
-    
+    XSpinlockTable_s * table = _XByteStorageLockTableShared();
+    XIndex h = XAddressHash(storage);
+
+    XSpinlock_t * lock = XSpinlockTableGet(table, h % table->capacity);
+    XSpinlockLock(lock);
 }
 void _XByteStorageUnlock(_XByteStorage * _Nonnull storage) {
     
@@ -188,27 +201,36 @@ void _XBufferRelease(_XBuffer * _Nonnull buffer) {
 #endif
 
 
-
+static inline XUInt _XByteStorageGoodInlineLength(XSize length) {
+#if CX_TARGET_RT_64_BIT
+        XUInt bufferSize = 16;
+        if (length > 16) {
+            bufferSize = (length + X_BUILD_UInt(0x7)) & (~X_BUILD_UInt(0x7));
+        }
+#else
+        XUInt bufferSize = 8;
+        if (length > 8) {
+            bufferSize = (length + X_BUILD_UInt(0x3)) & (~X_BUILD_UInt(0x3));
+        }
+#endif
+    return bufferSize;
+}
 
 static void _XByteStorageDistory(_XByteStorage * _Nonnull storage) {
-    XUInt32 length = storage->content.length;
-    if (length < _XByteStorageContentBufferSizeMin) {
-        size_t size = sizeof(_XByteStorageContent_t);
-        if (length > 4) {
-            XUInt bufferSize = (length - 1) & (~X_BUILD_UInt(0x3));
-            size += bufferSize;
-        }
-        bzero(&(storage->content), size);
+    if (0 == storage->content.flag) {
+        XSize length = storage->content.load;
+        XUInt bufferSize = _XByteStorageGoodInlineLength(length);
+        bufferSize += sizeof(XUInt);
+        bzero(&(storage->content), bufferSize);
     } else {
-        _XByteStorageContentLarge_t * content = (_XByteStorageContentLarge_t *)&(storage->content);
-        _XBufferRelease(content->buffer);
-        bzero(&(storage->content), sizeof(_XByteStorageContentLarge_t));
+        XUInt address = storage->content.load;
+        address = address << 1;
+        _XBuffer * buffer = (_XBuffer *)((uintptr_t)address);
+        _XBufferRelease(buffer);
     }
 }
 
-_Static_assert(sizeof(_XByteStorageContent_t) == 8, "error");
-
-static XRef _Nonnull _XByteStorageCreate(XBool isString, XObjectFlag flag, const XUInt8 * _Nullable buffer, XUInt32 length, const char * _Nonnull func) {
+static XRef _Nonnull _XByteStorageCreate(XBool isString, XObjectFlag flag, const XUInt8 * _Nullable buffer, XSize length, const char * _Nonnull func) {
     if (length > 0) {
         XAssert(NULL != buffer, func, "length > 0, buffer cannot NULL");
     }
@@ -239,7 +261,7 @@ static XRef _Nonnull _XByteStorageCreate(XBool isString, XObjectFlag flag, const
 
     const XType_s * cls = isString ? _XClassOf(String) : _XClassOf(Data);
     const _XAllocator_s * allocator = &_XValueAllocator;
-    XSize size = sizeof(_XByteStorageContent_t);
+    XSize size = sizeof(_XByteStorageContentBase_t);
     
     XObjectRcFlag rcFlag = 0;
     if ((flag & XObjectFlagStatic) == XObjectFlagStatic) {
@@ -247,84 +269,71 @@ static XRef _Nonnull _XByteStorageCreate(XBool isString, XObjectFlag flag, const
     }
     
     if (length >= _XByteStorageContentBufferSizeMin) {
-        size += sizeof(_XByteStorageContentLarge_t) - sizeof(_XByteStorageContent_t);
         XRef ref = allocator->allocateRef(allocator, (XClass)cls, size, rcFlag);
         _XByteStorage * storage = (_XByteStorage *)ref;
-        _XByteStorageContentLarge_t * storageContent = (_XByteStorageContentLarge_t *)&(storage->content);
         _XBuffer * buf = _XBufferAllocate((XPtr)buffer, length, ((flag & XObjectFlagClearWhenDealloc) == XObjectFlagClearWhenDealloc));
-        storageContent->length = length;
-        storageContent->offset = 0;
-        storageContent->buffer = 0;
-        storageContent->buffer = buf;
-        atomic_store(&(storageContent->hashCode), XByteStorageHashNoneFlag);
+        XUInt address = (XUInt)((uintptr_t)buf);
+        address = address >> 1;
+        storage->content.flag = 1;
+        storage->content.load = address;
         return ref;
     } else {
-        XUInt bufferSize = 4;
-        if (length > 4) {
-            bufferSize = (length + 3) & (~X_BUILD_UInt(0x3));
-            size += bufferSize - 4;
-        }
+        XUInt bufferSize = _XByteStorageGoodInlineLength(length);
+        size += bufferSize;
         XRef ref = allocator->allocateRef(allocator, (XClass)cls, size, rcFlag);
         _XByteStorage * storage = (_XByteStorage *)ref;
-        
-        _XByteStorageContentSmall_t * storageContent = (_XByteStorageContentSmall_t *)&(storage->content);
-        storageContent->length = length;
+
+        _XByteStorageContentBase_t * storageContent = (_XByteStorageContentBase_t *)&(storage->content);
+        storageContent->flag = 0;
+        storageContent->load = length;
         if (length > 0) {
-            memcpy(&(storageContent->extended[0]), buffer, length);
+            memcpy(&(storage->extended[0]), buffer, length);
         }
 
         if (bufferSize > length) {
-            bzero(&(storageContent->extended[length]), bufferSize - length);
+            bzero(&(storage->extended[length]), bufferSize - length);
         }
         return ref;
     }
 }
 
-static _XByteStorage * _Nonnull _XByteStorageCreateWithBuffer(XBool isString, XObjectFlag flag, _XBuffer * _Nonnull xbuffer, XUInt32 offset, XUInt32 length, const char * _Nonnull func) {
+static _XByteStorage * _Nonnull _XByteStorageCreateWithBuffer(XBool isString, XObjectFlag flag, _XBuffer * _Nonnull xbuffer, const char * _Nonnull func) {
     XAssert(NULL != xbuffer, func, "length > 0, buffer cannot NULL");
-    XAssert(length <= xbuffer->size, func, "range error");
-    XAssert(offset <= xbuffer->size - length, func, "range error");
     
     const XType_s * cls = isString ? _XClassOf(String) : _XClassOf(Data);
     const _XAllocator_s * allocator = &_XValueAllocator;
-    XSize size = sizeof(_XByteStorageContent_t);
+    XSize size = sizeof(_XByteStorageContentBase_t);
     
     XObjectRcFlag rcFlag = 0;
     if ((flag & XObjectFlagStatic) == XObjectFlagStatic) {
         rcFlag |= XObjectRcFlagStatic;
     }
     
-    if (length >= _XByteStorageContentBufferSizeMin) {
-        size += sizeof(_XByteStorageContentLarge_t) - sizeof(_XByteStorageContent_t);
+    if (xbuffer->size >= _XByteStorageContentBufferSizeMin) {
         XRef ref = allocator->allocateRef(allocator, (XClass)cls, size, rcFlag);
         _XByteStorage * storage = (_XByteStorage *)ref;
-        _XByteStorageContentLarge_t * storageContent = (_XByteStorageContentLarge_t *)&(storage->content);
 
         _XBuffer * buf = _XBufferRetain(xbuffer);
         if ((flag & XObjectFlagClearWhenDealloc) == XObjectFlagClearWhenDealloc) {
             _XBufferSetClearWhenDealloc(buf);
         }
-        storageContent->buffer = buf;
-        storageContent->offset = offset;
-        storageContent->length = length;
+        XUInt address = (XUInt)((uintptr_t)buf);
+        address = address >> 1;
+        storage->content.flag = 1;
+        storage->content.load = address;
         return ref;
     } else {
-        XUInt bufferSize = 4;
-        if (length > 4) {
-            bufferSize = (length + 3) & (~X_BUILD_UInt(0x3));
-            size += bufferSize - 4;
-        }
-        
-        XUInt8 * buffer = &(xbuffer->content[offset]);
+        XUInt bufferSize = _XByteStorageGoodInlineLength(xbuffer->size);
         XRef ref = allocator->allocateRef(allocator, (XClass)cls, size, rcFlag);
         _XByteStorage * storage = (_XByteStorage *)ref;
-        _XByteStorageContentSmall_t * storageContent = (_XByteStorageContentSmall_t *)&(storage->content);
-        storage->content.length = length;
-        if (length > 0) {
-            memcpy(&(storageContent->extended[0]), buffer, length);
+        storage->content.flag = 0;
+        storage->content.load = xbuffer->size;
+        
+        if (xbuffer->size > 0) {
+            memcpy(&(storage->extended[0]), &(xbuffer->content[0]), xbuffer->size);
         }
-        if (bufferSize > length) {
-            bzero(&(storageContent->extended[length]), bufferSize - length);
+        if (bufferSize > xbuffer->size) {
+            bzero(&(storage->extended[xbuffer->size]), bufferSize - xbuffer->size);
         }
         return ref;
     }
@@ -332,11 +341,6 @@ static _XByteStorage * _Nonnull _XByteStorageCreateWithBuffer(XBool isString, XO
 
 
 static _XByteStorage * _Nonnull __XRefAsByteStorage(XRef _Nonnull ref, XBool * _Nonnull isString, const char * _Nonnull func, const char * _Nonnull desc) {
-    XCompressedType compressedType = XCompressedTypeNone;
-    
-#if CX_TARGET_RT_64_BIT
-    __unused
-#endif
     XIndex typeId = _XHeapRefGetTypeId(ref);
     if (X_BUILD_TypeId_String == typeId) {
         *isString = true;
@@ -355,13 +359,16 @@ XByteStorageUnpacked_t _XByteStorageUnpack(XPtr _Nonnull ref, const char * _Nonn
         XBool isString = false;
         _XByteStorage * storage = __XRefAsByteStorage(ref, &isString, func, desc);
         result.isString = isString ? 1 : 0;
-        if (storage->content.length >= _XByteStorageContentBufferSizeMin) {
-            _XByteStorageContentLarge_t * storageContent = (_XByteStorageContentLarge_t *)&(storage->content);
-            result.content.large = storageContent;
+        if (1 == storage->content.flag) {
+            XUInt address = storage->content.load;
+            address = address << 1;
+            _XBuffer * buffer = (_XBuffer *)((uintptr_t)address);
+            result.content.large = buffer;
             result.contentType = 2;
+            result.length = buffer->size;
         } else {
-            _XByteStorageContentSmall_t * storageContent = (_XByteStorageContentSmall_t *)&(storage->content);
-            result.content.small = storageContent;
+            result.length = storage->content.load;
+            result.content.small = &(storage->extended[0]);
             result.contentType = 1;
         }
         return result;
@@ -374,13 +381,12 @@ XByteStorageUnpacked_t _XByteStorageUnpack(XPtr _Nonnull ref, const char * _Nonn
         result.isString = ((X_BUILD_TaggedObjectByteStorageDataFlag & (XUInt)ref) == X_BUILD_TaggedObjectByteStorageDataFlag) ? 0 : 1;
         result.contentType = 0;
 
-#if CX_TARGET_RT_64_BIT
-        XUInt64 v = (XUInt64)((uintptr_t)ref);
-        XUInt64 storageContent = (v >> 1) & X_BUILD_TaggedByteStorageContentMask;
-        XUInt64 len = (v >> X_BUILD_TaggedByteStorageContentLengthShift) & X_BUILD_TaggedByteStorageContentLengthMask;
+        XUInt v = (XUInt)((uintptr_t)ref);
+        XUInt storageContent = (v >> 1) & X_BUILD_TaggedByteStorageContentMask;
+        XUInt len = (v >> X_BUILD_TaggedByteStorageContentLengthShift) & X_BUILD_TaggedByteStorageContentLengthMask;
         XAssert(len <= X_BUILD_TaggedByteStorageContentLengthMax, func, "");
         
-        XUInt64 bytes = storageContent;        
+        XUInt bytes = storageContent;
         /*
          abc00000
          */
@@ -394,31 +400,15 @@ XByteStorageUnpacked_t _XByteStorageUnpack(XPtr _Nonnull ref, const char * _Nonn
          */
         
 #if CX_TARGET_RT_BIG_ENDIAN
-        bytes |= (len << 56ULL);
-#else
-        bytes = (bytes << 8ULL) | len;
+        bytes = bytes << X_BUILD_UInt(8);
 #endif
-        result.content.__nano = bytes;
-        return result;
-#else
-        XUInt32 v = (XUInt32)((uintptr_t)ref);
-        XUInt32 storageContent = (v >> 1) & X_BUILD_TaggedByteStorageContentMask;
-        XUInt32 len = (v >> X_BUILD_TaggedByteStorageContentLengthShift) & X_BUILD_TaggedByteStorageContentLengthMask;
-        XAssert(len <= X_BUILD_TaggedByteStorageContentLengthMax, __func__, "");
         
-        XUInt32 bytes = storageContent;
-#if CX_TARGET_RT_BIG_ENDIAN
-        bytes |= (len << 24UL);
-#else
-        bytes = (bytes << 8ULL) | len;
-#endif
         result.content.__nano = bytes;
         return result;
-#endif
     }
 }
 
-XHashCode _XByteStorageHashByte(XUInt8 * _Nullable bytes, XUInt length, const char * _Nonnull func) {
+XHashCode _XByteStorageHashByte(XUInt8 * _Nullable bytes, XSize length, const char * _Nonnull func) {
     if (length > 0) {
         XAssert(NULL != bytes, func, "unknown error");
     }
@@ -432,51 +422,41 @@ XHashCode _XByteStorageHash(XRef _Nonnull ref, XBool isString, const char * _Non
     uint32_t isStringValue = isString ? 1 : 0;
     XAssert(isStringValue == v.isString, func, desc);
     if (0 == v.contentType) {
-        XUInt8 * bytes = &(v.content.nano.content[1]);
-        XUInt32 length = v.content.nano.content[0];
-        return _XByteStorageHashByte(bytes, length, func);
+        return _XByteStorageHashByte(&(v.content.nano[0]), v.length, func);
     } else if (1 == v.contentType) {
-        XUInt8 * bytes = &(v.content.small->extended[0]);
-        XUInt32 length = v.content.small->length;
-        return _XByteStorageHashByte(bytes, length, func);
+        return _XByteStorageHashByte(v.content.small, v.length, func);
     } else if (2 == v.contentType) {
-        XFastUInt hashCode = atomic_load(&(v.content.large->hashCode));
-        if ((hashCode & XByteStorageHashNoneFlag) == XByteStorageHashNoneFlag) {
-            XUInt8 * bytes = &(v.content.large->buffer->content[v.content.large->offset]);
-            XUInt32 length = v.content.large->length;
-            hashCode = _XByteStorageHashByte(bytes, length, func);
-            atomic_store(&(v.content.large->hashCode), hashCode);
-        }
-        return hashCode;
+//        XFastUInt hashCode = atomic_load(&(v.content.large->hashCode));
+//        if ((hashCode & XByteStorageHashNoneFlag) == XByteStorageHashNoneFlag) {
+//            XUInt8 * bytes = &(v.content.large->buffer->content[v.content.large->offset]);
+//            XUInt32 length = v.content.large->length;
+//            hashCode = _XByteStorageHashByte(bytes, length, func);
+//            atomic_store(&(v.content.large->hashCode), hashCode);
+//        }
+//        return hashCode;
+        return 0;
     } else {
         XAssert(false, func, "unknown error");
     }
 }
-XUInt8 * _Nonnull _XByteStorageUnpackedGetByte(XByteStorageUnpacked_t * _Nonnull ptr, XUInt32 * _Nonnull lengthPtr, const char * _Nonnull func) {
-    XUInt32 length = 0;
-    XUInt8 * bytes = NULL;
+XUInt8 * _Nonnull _XByteStorageUnpackedGetByte(XByteStorageUnpacked_t * _Nonnull ptr, const char * _Nonnull func) {
     if (0 == ptr->contentType) {
-        bytes = &(ptr->content.nano.content[1]);
-        length = ptr->content.nano.content[0];
+        return &(ptr->content.nano[0]);
     } else if (1 == ptr->contentType) {
-        bytes = &(ptr->content.small->extended[0]);
-        length = ptr->content.small->length;
+        return ptr->content.small;
     } else if (2 == ptr->contentType) {
-        bytes = &(ptr->content.large->buffer->content[ptr->content.large->offset]);
-        length = ptr->content.large->length;
+        return &(ptr->content.large->content[0]);
     } else {
         XAssert(false, func, "unknown error");
     }
-    *lengthPtr = length;
-    return bytes;
 }
 
 
 XComparisonResult _XByteStorageUnpackedCompare(XByteStorageUnpacked_t * _Nonnull lhs, XByteStorageUnpacked_t * _Nonnull rhs, const char * _Nonnull func) {
-    XUInt32 leftLength = 0;
-    XUInt32 rightLength = 0;
-    XUInt8 * left = _XByteStorageUnpackedGetByte(lhs, &leftLength, func);
-    XUInt8 * right = _XByteStorageUnpackedGetByte(rhs, &rightLength, func);
+    XSize leftLength = lhs->length;
+    XSize rightLength = rhs->length;
+    XUInt8 * left = _XByteStorageUnpackedGetByte(lhs, func);
+    XUInt8 * right = _XByteStorageUnpackedGetByte(rhs, func);
     
     XSize size = MIN(leftLength, rightLength);
     
@@ -492,10 +472,10 @@ XComparisonResult _XByteStorageUnpackedCompare(XByteStorageUnpacked_t * _Nonnull
 }
 
 XBool _XByteStorageUnpackedEqual(XByteStorageUnpacked_t * _Nonnull lhs, XByteStorageUnpacked_t * _Nonnull rhs, const char * _Nonnull func) {
-    XUInt32 leftLength = 0;
-    XUInt32 rightLength = 0;
-    XUInt8 * left = _XByteStorageUnpackedGetByte(lhs, &leftLength, func);
-    XUInt8 * right = _XByteStorageUnpackedGetByte(rhs, &rightLength, func);
+    XSize leftLength = lhs->length;
+    XSize rightLength = rhs->length;
+    XUInt8 * left = _XByteStorageUnpackedGetByte(lhs, func);
+    XUInt8 * right = _XByteStorageUnpackedGetByte(rhs, func);
     if (leftLength != rightLength) {
         return false;
     }
@@ -676,7 +656,7 @@ XString _Nullable _XStringCreateWithUtf8Bytes(XObjectFlag flag, const XUInt8 * _
     XRange range = _XRangeOfString(bytes, length);
     XAssert(length < UINT32_MAX, func, "too large");
     if (XIndexNotFound != range.location) {
-        return _XByteStorageCreate(true, flag, bytes + range.location, (XUInt32)range.length, __func__);
+        return _XByteStorageCreate(true, flag, bytes + range.location, range.length, __func__);
     }
     return NULL;
 }
@@ -715,24 +695,21 @@ XString _Nullable XStringCreateByDecodeData(XObjectFlag flag, XData _Nonnull dat
     switch (encode) {
         case XStringEncodingUtf8: {
             if (0 == v.contentType) {
-                XUInt8 * bytes = &(v.content.nano.content[1]);
-                return _XStringCreateWithUtf8Bytes(flag, bytes, v.content.nano.content[0], __func__);
+                XUInt8 * bytes = &(v.content.nano[0]);
+                return _XStringCreateWithUtf8Bytes(flag, bytes, v.length, __func__);
             } else if (1 == v.contentType) {
-                XUInt8 * bytes = &(v.content.small->extended[0]);
-                return _XStringCreateWithUtf8Bytes(flag, bytes, v.content.small->length, __func__);
+                return _XStringCreateWithUtf8Bytes(flag, v.content.small, v.length, __func__);
             } else if (2 == v.contentType) {
-                _XBuffer * buffer = v.content.large->buffer;
-                XUInt offset = v.content.large->offset;
-                XUInt8 * bytes = &(buffer->content[offset]);
-                XUInt32 length = v.content.large->length;
-                XRange range = _XRangeOfString(bytes, length);
+                _XBuffer * buffer = v.content.large;
+                XUInt8 * bytes = &(buffer->content[0]);
+                XRange range = _XRangeOfString(bytes, v.length);
                 if (XIndexNotFound == range.location) {
                     return NULL;
                 }
-                if (range.length < buffer->size / 2 || range.location + offset > XUInt32Max) {
+                if (range.length != buffer->size || range.location != 0) {
                     return _XByteStorageCreate(true, flag, bytes + range.location, (XUInt32)range.length, __func__);
                 } else {
-                    return _XByteStorageCreateWithBuffer(true, flag, buffer, (XUInt32)(range.location + offset), (XUInt32)range.length, __func__);
+                    return _XByteStorageCreateWithBuffer(true, flag, buffer, __func__);
                 }
             } else {
                 XAssert(false, __func__, "unknown error");
@@ -754,7 +731,7 @@ XHashCode XStringHash(XRef _Nonnull ref) {
 
 #define XDataEmpty ((XData)((uintptr_t)(X_BUILD_TaggedObjectFlag | X_BUILD_TaggedObjectClassData)))
 
-XData _Nonnull XDataCreate(XObjectFlag flag, XUInt8 * _Nullable bytes, XUInt32 length) {
+XData _Nonnull XDataCreate(XObjectFlag flag, XUInt8 * _Nullable bytes, XSize length) {
     if (length == 0) {
         return XDataEmpty;
     }
@@ -768,25 +745,13 @@ XData _Nullable XDataCreateByEncodeString(XObjectFlag flag, XString _Nonnull str
     switch (encode) {
         case XStringEncodingUtf8: {
             if (0 == v.contentType) {
-                XUInt8 * bytes = &(v.content.nano.content[1]);
-                return XDataCreate(flag, bytes, v.content.nano.content[0]);
+                XUInt8 * bytes = &(v.content.nano[0]);
+                return XDataCreate(flag, bytes, v.length);
             } else if (1 == v.contentType) {
-                XUInt8 * bytes = &(v.content.small->extended[0]);
-                return XDataCreate(flag, bytes, v.content.small->length);
+                return XDataCreate(flag, v.content.small, v.length);
             } else if (2 == v.contentType) {
-                _XBuffer * buffer = v.content.large->buffer;
-                XUInt offset = v.content.large->offset;
-                XUInt8 * bytes = &(buffer->content[offset]);
-                XUInt32 length = v.content.large->length;
-                XRange range = _XRangeOfString(bytes, length);
-                if (XIndexNotFound == range.location) {
-                    return NULL;
-                }
-                if (range.length < buffer->size / 2 || range.location + offset > XUInt32Max) {
-                    return _XByteStorageCreate(false, flag, bytes + range.location, (XUInt32)range.length, __func__);
-                } else {
-                    return _XByteStorageCreateWithBuffer(false, flag, buffer, (XUInt32)(range.location + offset), (XUInt32)range.length, __func__);
-                }
+                _XBuffer * buffer = v.content.large;
+                return _XByteStorageCreateWithBuffer(false, flag, buffer, __func__);
             } else {
                 XAssert(false, __func__, "unknown error");
             }

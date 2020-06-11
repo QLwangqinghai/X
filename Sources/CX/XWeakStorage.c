@@ -9,7 +9,6 @@
 #include "internal/XRuntimeInternal.h"
 #include <pthread.h>
 
-#import <os/lock.h>
 typedef struct {
     XUInt addressMask;
     _XWeakTable tables[0];

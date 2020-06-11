@@ -15,7 +15,6 @@
 
 #pragma mark - layout
 
-_Static_assert(sizeof(_XByteStorageContentLarge_t) == sizeof(XUInt32) * 2 + sizeof(_Atomic(XFastUInt)) + sizeof(_XBuffer *), "unknown error");
 _Static_assert(sizeof(XUInt) == sizeof(size_t), "unknown error");
 _Static_assert(sizeof(_Atomic(uintptr_t)) == sizeof(XUInt), "unknown error");
 _Static_assert(sizeof(_Atomic(XFastUInt32)) == sizeof(XUInt32), "unknown error");
