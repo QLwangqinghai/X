@@ -511,16 +511,6 @@ XBool _XByteStorageEqual(XRef _Nonnull lhs, XRef _Nonnull rhs, XBool isString, c
     uint32_t isStringValue = isString ? 1 : 0;
     XAssert(isStringValue == left.isString, func, desc);
     XAssert(isStringValue == right.isString, func, desc);
-
-    if (2 == left.contentType && 2 == right.contentType) {
-        XFastUInt leftHashCode = atomic_load(&(left.content.large->hashCode));
-        XFastUInt rightHashCode = atomic_load(&(right.content.large->hashCode));
-        if (XByteStorageHashCodeIsValid(leftHashCode) && XByteStorageHashCodeIsValid(rightHashCode)) {
-            if (leftHashCode != rightHashCode) {
-                return false;
-            }
-        }
-    }
     return _XByteStorageUnpackedEqual(&left, &right, func);
 }
 

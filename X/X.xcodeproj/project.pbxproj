@@ -27,6 +27,7 @@
 		D6447016244D757D009E4F57 /* XRef.c in Sources */ = {isa = PBXBuildFile; fileRef = D6447015244D757D009E4F57 /* XRef.c */; };
 		D6447021245018AE009E4F57 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = D6447020245018AE009E4F57 /* main.mm */; };
 		D647EC6E24584E8F008E1D15 /* XDate.c in Sources */ = {isa = PBXBuildFile; fileRef = D647EC6D24584E8F008E1D15 /* XDate.c */; };
+		D65A0CCA2493C838003B96AE /* XHasher.c in Sources */ = {isa = PBXBuildFile; fileRef = D65A0CC92493C838003B96AE /* XHasher.c */; };
 		D66E04F4248E927600B1A91D /* XCCBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04F3248E927600B1A91D /* XCCBuffer.c */; };
 		D66E04FC2491295500B1A91D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = D66E04FB2491295500B1A91D /* main.c */; };
 		D681FD7C2456D392001B28EB /* XByteStorage.c in Sources */ = {isa = PBXBuildFile; fileRef = D681FD7B2456D392001B28EB /* XByteStorage.c */; };
@@ -108,6 +109,8 @@
 		D6447020245018AE009E4F57 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		D647EC6A24583E33008E1D15 /* XAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XAtomic.h; sourceTree = "<group>"; };
 		D647EC6D24584E8F008E1D15 /* XDate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XDate.c; sourceTree = "<group>"; };
+		D65A0CC82493C838003B96AE /* XHasher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XHasher.h; sourceTree = "<group>"; };
+		D65A0CC92493C838003B96AE /* XHasher.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XHasher.c; sourceTree = "<group>"; };
 		D66E04F2248E927600B1A91D /* XCCBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCBuffer.h; sourceTree = "<group>"; };
 		D66E04F3248E927600B1A91D /* XCCBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCBuffer.c; sourceTree = "<group>"; };
 		D66E04F92491295400B1A91D /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -269,6 +272,8 @@
 				77C7F5C524742B4F00B7EC3C /* XClass.h */,
 				77C7F5CB247A12BB00B7EC3C /* XRefInternal.h */,
 				D68CDBE924925BBE005D4958 /* XLock.h */,
+				D65A0CC82493C838003B96AE /* XHasher.h */,
+				D65A0CC92493C838003B96AE /* XHasher.c */,
 			);
 			path = internal;
 			sourceTree = "<group>";
@@ -465,6 +470,7 @@
 				77C7F5CA2476C53D00B7EC3C /* XWeakStorage.c in Sources */,
 				D6447009244D7261009E4F57 /* XMemory.c in Sources */,
 				D6F4A3D0248B66BB007923C9 /* XCoreCollection.c in Sources */,
+				D65A0CCA2493C838003B96AE /* XHasher.c in Sources */,
 				77C7F5C724742B4F00B7EC3C /* XClass.c in Sources */,
 				D644700B244D7261009E4F57 /* XType.c in Sources */,
 				D6446FE3244D7256009E4F57 /* main.m in Sources */,

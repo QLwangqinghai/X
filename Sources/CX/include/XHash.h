@@ -41,7 +41,24 @@ typedef struct {
     uint64_t v[4];
 } XSipHashState;
 
+typedef struct {
+    XSipHashState state;
+    XUInt64 length;
+    union {
+      uint8_t bytes[8];
+      uint64_t word;
+    } pendingBlock;
+} XSipHashContext;
+
 extern void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]);
 
+extern XUInt64 XSipHash(const XSipHashState * _Nonnull state, const XUInt8 * _Nonnull bytes, XUInt64 length);
+
+
+extern void XSipHashInit(XSipHashContext * _Nonnull context, XUInt64 key[_Nonnull 2]);
+extern void XSipHashInitWithState(XSipHashContext * _Nonnull context, const XSipHashState * _Nonnull state);
+
+extern void XSipHashCompress(XSipHashContext * _Nonnull context, const XUInt8 * _Nonnull bytes, XUInt64 length);
+extern XUInt64 XSipHashFinalize(XSipHashContext * _Nonnull context);
 
 #endif /* XHash_h */

@@ -206,16 +206,9 @@ typedef struct {
 typedef struct {
     _XObjectCompressedBase _runtime;
     _XByteStorageContentBase_t content;
-    XUInt8 extended[0];// 32(8, )  64(16, )
+    XUInt8 extended[0];// 32[8, )  64[16, )
 } _XByteStorage;
 
-//typedef void (*XCustomRelease_f)(XPtr _Nullable context, XPtr _Nonnull content, XUInt length);
-//typedef struct {
-//    XPtr _Nullable context;
-//    XUInt length;
-//    XCustomRelease_f _Nullable customRelease;
-//    XPtr _Nonnull content;
-//} _XByteCustomContent_t;
 
 typedef _XByteStorage _XString;
 

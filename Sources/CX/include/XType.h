@@ -189,7 +189,7 @@ typedef XUInt XHashCode;
 #pragma mark - XTimeInterval
 
 
-//微妙时间
+//微秒时间
 typedef int64_t XTimeInterval;
 #define XTimeIntervalMin INT64_MIN
 #define XTimeIntervalMax INT64_MAX

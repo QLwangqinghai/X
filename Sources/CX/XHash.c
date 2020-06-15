@@ -126,50 +126,47 @@ uint32_t __XMurmurHash32(const void * _Nonnull key, uint32_t len, uint32_t seed)
 }
 
 
-
+#if CX_TARGET_RT_64_BIT
 // 64-bit hash for 64-bit platforms
 uint64_t __XMurmurHash64_rt64(const void * _Nonnull key, uint64_t len, uint32_t seed) {
-        const uint64_t m = 0xc6a4a7935bd1e995ULL;
-        const int64_t r = 47;
- 
-        uint64_t h = seed ^ (len * m);
- 
-        const uint64_t * data = (const uint64_t *)key;
-        const uint64_t * end = data + (len/8);
- 
-        while (data != end)
-        {
-                uint64_t k = *data++;
- 
-                k *= m;
-                k ^= k >> r;
-                k *= m;
- 
-                h ^= k;
-                h *= m;
-        }
- 
-        const uint8_t * data2 = (const uint8_t *)data;
- 
-        switch (len & 7)
-        {
-                case 7: h ^= (uint64_t)(data2[6]) << 48;
-                case 6: h ^= (uint64_t)(data2[5]) << 40;
-                case 5: h ^= (uint64_t)(data2[4]) << 32;
-                case 4: h ^= (uint64_t)(data2[3]) << 24;
-                case 3: h ^= (uint64_t)(data2[2]) << 16;
-                case 2: h ^= (uint64_t)(data2[1]) << 8;
-                case 1: h ^= (uint64_t)(data2[0]);
-                        h *= m;
-        };
- 
-        h ^= h >> r;
+    const uint64_t m = 0xc6a4a7935bd1e995ULL;
+    const int64_t r = 47;
+
+    uint64_t h = seed ^ (len * m);
+
+    const uint64_t * data = (const uint64_t *)key;
+    const uint64_t * end = data + (len/8);
+
+    while (data != end) {
+        uint64_t k = *data++;
+        k *= m;
+        k ^= k >> r;
+        k *= m;
+
+        h ^= k;
         h *= m;
-        h ^= h >> r;
- 
-        return h;
+    }
+
+    const uint8_t * data2 = (const uint8_t *)data;
+
+    switch (len & 7) {
+        case 7: h ^= (uint64_t)(data2[6]) << 48;
+        case 6: h ^= (uint64_t)(data2[5]) << 40;
+        case 5: h ^= (uint64_t)(data2[4]) << 32;
+        case 4: h ^= (uint64_t)(data2[3]) << 24;
+        case 3: h ^= (uint64_t)(data2[2]) << 16;
+        case 2: h ^= (uint64_t)(data2[1]) << 8;
+        case 1: h ^= (uint64_t)(data2[0]);
+                h *= m;
+    };
+
+    h ^= h >> r;
+    h *= m;
+    h ^= h >> r;
+
+    return h;
 }
- 
+ #else
 // 64-bit hash for 32-bit platforms
 uint64_t __XMurmurHash64_rt32(const void * _Nonnull key, uint32_t len, uint32_t seed) {
         const uint32_t m = 0x5bd1e995;
@@ -220,7 +217,7 @@ uint64_t __XMurmurHash64_rt32(const void * _Nonnull key, uint32_t len, uint32_t 
  
         return h;
 }
-
+#endif
 
 
 XUInt32 XMurmurHash32(const XPtr _Nonnull key, XUInt32 len, XUInt32 seed) {
@@ -722,10 +719,7 @@ uint64_t SIPHASH_24(const uint64_t key[2], const uint8_t *input,
 }
 
 
-void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) {
-    XAssert(NULL != state, __func__, "");
-    XAssert(NULL != key, __func__, "");
-    
+static inline void __XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) {
     uint64_t * v = state->v;
     v[0] = key[0] ^ UINT64_C(0x736f6d6570736575);
     v[1] = key[1] ^ UINT64_C(0x646f72616e646f6d);
@@ -733,22 +727,140 @@ void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) 
     v[3] = key[1] ^ UINT64_C(0x7465646279746573);
 }
 
-void XSipHashStateCompress(XSipHashState * _Nonnull state, XUInt64 m) {
-    XAssert(NULL != state, __func__, "");
-    uint64_t * v = state->v;
-    
+
+static inline void __XSipHashCompress(uint64_t v[4], XUInt64 m) {
     v[3] ^= m;
     siphash_round(v);
     siphash_round(v);
     v[0] ^= m;
 }
 
-void XSipHashStateFinalize(XSipHashState * _Nonnull state, XUInt64 m) {
+void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) {
     XAssert(NULL != state, __func__, "");
-    uint64_t * v = state->v;
+    XAssert(NULL != key, __func__, "");
+
+    return __XSipHashStateInit(state, key);
+}
+
+
+
+XUInt64 XSipHash(const XSipHashState * _Nonnull state, const XUInt8 * _Nonnull bytes, XUInt64 length) {
+    XAssert(NULL != state, __func__, "");
+    if (length > 0) {
+        XAssert(NULL != bytes, __func__, "");
+    }
+    const XUInt64 orig_input_len = length;
+    uint64_t v[4] = {};
+    memcpy(v, state->v, sizeof(uint64_t[4]));
+
+    const uint64_t * data = (const uint64_t *)bytes;
+    const uint64_t * end = data + (length/8);
     
-    v[3] ^= m;
+    while (data < end) {
+        uint64_t m = *data++;
+        v[3] ^= m;
+        siphash_round(v);
+        siphash_round(v);
+        v[0] ^= m;
+    }
+
+    union {
+      uint8_t bytes[8];
+      uint64_t word;
+    } last_block;
+    last_block.word = 0;
+    memcpy(last_block.bytes, end, length & 0x7);
+    last_block.bytes[7] = orig_input_len & 0xff;
+
+    v[3] ^= last_block.word;
     siphash_round(v);
     siphash_round(v);
-    v[0] ^= m;
+    v[0] ^= last_block.word;
+
+    v[2] ^= 0xff;
+    siphash_round(v);
+    siphash_round(v);
+    siphash_round(v);
+    siphash_round(v);
+
+    return v[0] ^ v[1] ^ v[2] ^ v[3];
+}
+
+
+void XSipHashInit(XSipHashContext * _Nonnull context, XUInt64 key[_Nonnull 2]) {
+    XAssert(NULL != context, __func__, "");
+    XAssert(NULL != key, __func__, "");
+
+    __XSipHashStateInit(&(context->state), key);
+    context->length = 0;
+    context->pendingBlock.word = 0;
+}
+
+
+void XSipHashInitWithState(XSipHashContext * _Nonnull context, const XSipHashState * _Nonnull state) {
+    XAssert(NULL != context, __func__, "");
+    XAssert(NULL != state, __func__, "");
+    memcpy(&(context->state), state, sizeof(XSipHashState));
+    context->length = 0;
+    context->pendingBlock.word = 0;
+}
+
+void XSipHashCompress(XSipHashContext * _Nonnull context, const XUInt8 * _Nonnull bytes, XUInt64 length) {
+    XAssert(NULL != context, __func__, "");
+    if (length > 0) {
+        XAssert(NULL != bytes, __func__, "");
+    } else {
+        return;
+    }
+    
+    uint64_t * v = context->state.v;
+    
+    XUInt64 remainLength = length;
+    XUInt64 plen = context->length & 0x7;
+    context->length += length;
+    if (plen != 0) {
+        XUInt64 clen = 8 - plen;
+        if (length >= clen) {
+            memcpy(&(context->pendingBlock.bytes[plen]), bytes, clen);
+            __XSipHashCompress(v, context->pendingBlock.word);
+            remainLength -= clen;
+        } else {
+            memcpy(&(context->pendingBlock.bytes[plen]), bytes, length);
+            remainLength -= length;
+            return;
+        }
+    }
+    
+    const uint64_t * data = (const uint64_t *)(bytes + plen);
+    const uint64_t * end = data + (remainLength/8);
+    
+    while (data < end) {
+        uint64_t k = *data++;
+        __XSipHashCompress(v, k);
+    }
+
+    plen = remainLength & 0x7;
+    if (plen != 0) {
+        memcpy(&(context->pendingBlock.bytes[0]), bytes, plen);
+    }
+}
+
+XUInt64 XSipHashFinalize(XSipHashContext * _Nonnull context) {
+    XAssert(NULL != context, __func__, "");
+    uint64_t * v = context->state.v;
+
+    XUInt64 plen = context->length & 0x7;
+    XUInt64 clen = 8 - plen;
+    memset(&(context->pendingBlock.bytes[plen]), 0, clen);
+    
+    context->pendingBlock.bytes[7] = (XUInt8)(context->length & 0xff);
+    __XSipHashCompress(v, context->pendingBlock.word);
+
+    v[2] ^= 0xff;
+    siphash_round(v);
+    siphash_round(v);
+    siphash_round(v);
+    siphash_round(v);
+    
+    return v[0] ^ v[1] ^ v[2] ^ v[3];
 }
