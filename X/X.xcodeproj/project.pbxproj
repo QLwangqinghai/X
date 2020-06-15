@@ -88,14 +88,6 @@
 		D6446FEF244D7261009E4F57 /* XObject.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XObject.c; sourceTree = "<group>"; };
 		D6446FF0244D7261009E4F57 /* XType.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XType.c; sourceTree = "<group>"; };
 		D6446FF2244D7261009E4F57 /* CX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CX.h; sourceTree = "<group>"; };
-		D6446FF3244D7261009E4F57 /* XDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XDevice.h; sourceTree = "<group>"; };
-		D6446FF4244D7261009E4F57 /* CXTargetConditionals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXTargetConditionals.h; sourceTree = "<group>"; };
-		D6446FF5244D7261009E4F57 /* XRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRef.h; sourceTree = "<group>"; };
-		D6446FF6244D7261009E4F57 /* XRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRuntime.h; sourceTree = "<group>"; };
-		D6446FF7244D7261009E4F57 /* XProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XProcess.h; sourceTree = "<group>"; };
-		D6446FF8244D7261009E4F57 /* XType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XType.h; sourceTree = "<group>"; };
-		D6446FF9244D7261009E4F57 /* XObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XObject.h; sourceTree = "<group>"; };
-		D6446FFA244D7261009E4F57 /* XMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMemory.h; sourceTree = "<group>"; };
 		D6446FFD244D7261009E4F57 /* XNumber.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XNumber.c; sourceTree = "<group>"; };
 		D6447000244D7261009E4F57 /* XAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XAllocator.h; sourceTree = "<group>"; };
 		D6447001244D7261009E4F57 /* XRuntimeInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRuntimeInternal.h; sourceTree = "<group>"; };
@@ -107,7 +99,6 @@
 		D6447015244D757D009E4F57 /* XRef.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XRef.c; sourceTree = "<group>"; };
 		D644701E245018AE009E4F57 /* T */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = T; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6447020245018AE009E4F57 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
-		D647EC6A24583E33008E1D15 /* XAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XAtomic.h; sourceTree = "<group>"; };
 		D647EC6D24584E8F008E1D15 /* XDate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XDate.c; sourceTree = "<group>"; };
 		D65A0CC82493C838003B96AE /* XHasher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XHasher.h; sourceTree = "<group>"; };
 		D65A0CC92493C838003B96AE /* XHasher.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XHasher.c; sourceTree = "<group>"; };
@@ -115,6 +106,16 @@
 		D66E04F3248E927600B1A91D /* XCCBuffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCBuffer.c; sourceTree = "<group>"; };
 		D66E04F92491295400B1A91D /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
 		D66E04FB2491295500B1A91D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		D66E05012497D5E400B1A91D /* XDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XDevice.h; sourceTree = "<group>"; };
+		D66E05022497D5E400B1A91D /* XHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHash.h; sourceTree = "<group>"; };
+		D66E05032497D5E400B1A91D /* XProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XProcess.h; sourceTree = "<group>"; };
+		D66E05042497D5E400B1A91D /* XType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XType.h; sourceTree = "<group>"; };
+		D66E05052497D5E400B1A91D /* XMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMemory.h; sourceTree = "<group>"; };
+		D66E05062497D5E400B1A91D /* CXTargetConditionals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXTargetConditionals.h; sourceTree = "<group>"; };
+		D66E05072497D5E400B1A91D /* XAtomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XAtomic.h; sourceTree = "<group>"; };
+		D66E05092497D5E400B1A91D /* XRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRef.h; sourceTree = "<group>"; };
+		D66E050A2497D5E400B1A91D /* XRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRuntime.h; sourceTree = "<group>"; };
+		D66E050B2497D5E400B1A91D /* XObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XObject.h; sourceTree = "<group>"; };
 		D681FD7B2456D392001B28EB /* XByteStorage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = XByteStorage.c; sourceTree = "<group>"; };
 		D68CDBE12492017C005D4958 /* XCCHasher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCHasher.h; sourceTree = "<group>"; };
 		D68CDBE22492017C005D4958 /* XCCHasher.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCHasher.c; sourceTree = "<group>"; };
@@ -140,7 +141,6 @@
 		D6F4A42D248F3905007923C9 /* XCCPageTable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCPageTable.c; sourceTree = "<group>"; };
 		D6F4A436248FAF6E007923C9 /* XCCMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCCMap.h; sourceTree = "<group>"; };
 		D6F4A437248FAF6E007923C9 /* XCCMap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XCCMap.c; sourceTree = "<group>"; };
-		D6F4A4762490BEB6007923C9 /* XHash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XHash.h; sourceTree = "<group>"; };
 		D6F4A4772490BEB6007923C9 /* XHash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = XHash.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -249,17 +249,9 @@
 		D6446FF1244D7261009E4F57 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				D66E05002497D5E400B1A91D /* Base */,
+				D66E05082497D5E400B1A91D /* Object */,
 				D6446FF2244D7261009E4F57 /* CX.h */,
-				D6446FF3244D7261009E4F57 /* XDevice.h */,
-				D6446FF4244D7261009E4F57 /* CXTargetConditionals.h */,
-				D6446FF5244D7261009E4F57 /* XRef.h */,
-				D6446FF6244D7261009E4F57 /* XRuntime.h */,
-				D6446FF7244D7261009E4F57 /* XProcess.h */,
-				D6446FF8244D7261009E4F57 /* XType.h */,
-				D6446FF9244D7261009E4F57 /* XObject.h */,
-				D6446FFA244D7261009E4F57 /* XMemory.h */,
-				D647EC6A24583E33008E1D15 /* XAtomic.h */,
-				D6F4A4762490BEB6007923C9 /* XHash.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -308,6 +300,30 @@
 				D66E04FB2491295500B1A91D /* main.c */,
 			);
 			path = Test;
+			sourceTree = "<group>";
+		};
+		D66E05002497D5E400B1A91D /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				D66E05012497D5E400B1A91D /* XDevice.h */,
+				D66E05022497D5E400B1A91D /* XHash.h */,
+				D66E05032497D5E400B1A91D /* XProcess.h */,
+				D66E05042497D5E400B1A91D /* XType.h */,
+				D66E05052497D5E400B1A91D /* XMemory.h */,
+				D66E05062497D5E400B1A91D /* CXTargetConditionals.h */,
+				D66E05072497D5E400B1A91D /* XAtomic.h */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		D66E05082497D5E400B1A91D /* Object */ = {
+			isa = PBXGroup;
+			children = (
+				D66E05092497D5E400B1A91D /* XRef.h */,
+				D66E050A2497D5E400B1A91D /* XRuntime.h */,
+				D66E050B2497D5E400B1A91D /* XObject.h */,
+			);
+			path = Object;
 			sourceTree = "<group>";
 		};
 		D6F4A3CD248B66BB007923C9 /* CoreCollection */ = {

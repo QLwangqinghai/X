@@ -37,7 +37,7 @@ extern "C" {
 
 #define XAssert(cond, func, desc) {\
     if (!(cond)) {\
-        fprintf(stderr, "%s error, %s", func, desc);\
+        fprintf(stderr, "%s error, %s\n", func, desc);\
         abort();\
     }\
 }
@@ -77,7 +77,7 @@ typedef intptr_t XSIntptr;
 
     #define XUIntMax UINT64_MAX
 
-    #define X_BUILD_UInt(value) value##ULL
+    #define X_BUILD_UInt(value) UINT64_C(value)
 
 #else
     typedef int32_t XSInt;
@@ -91,7 +91,7 @@ typedef intptr_t XSIntptr;
     #define XSIntMax INT32_MAX
 
     #define XUIntMax UINT32_MAX
-    #define X_BUILD_UInt(value) value##UL
+    #define X_BUILD_UInt(value) UINT32_C(value)
 
 #endif
     
@@ -153,41 +153,12 @@ typedef uint32_t XU32Char;
 #pragma mark - pointer
 
 typedef void * XPtr;
-typedef void * XRef;
-
-typedef XRef XHeapRef;
-typedef XRef XStackRef;
-
-
-//描述一个对象的类型，以及对象方法的指针列表
-typedef XRef XClass;
-
-//静态常量
-typedef XRef XNull;
-typedef XRef XBoolean;
-
-//不可变value类型， 默认hash是对内容的hash， 比较是对内容的比较
-typedef XRef XNumber;
-typedef XRef XString;
-typedef XRef XData;
-typedef XRef XDate;
-typedef XRef XValue;
-
-//对象类型， 默认hash是对对象地址的hash， 比较是对对象地址的比较
-typedef XRef XPackageRef;
-typedef XRef XWeakPackageRef;
-typedef XRef XArrayRef;
-typedef XRef XMapRef;
-typedef XRef XSetRef;
-
-typedef XRef XObject;
 
 #pragma mark - XHashCode
 
 typedef XUInt XHashCode;
 
 #pragma mark - XTimeInterval
-
 
 //微秒时间
 typedef int64_t XTimeInterval;
@@ -236,16 +207,16 @@ typedef int64_t XTimeInterval;
     
 #endif
 
-#if CX_TARGET_RT_64_BIT
-    #define X_BUILD_UInt(value) value##ULL
-#else
-    #define X_BUILD_UInt(value) value##UL
-#endif
-
     
 typedef XSInt32 XComparisonResult;
+
+// < 0
 extern const XComparisonResult XCompareLessThan;
+
+// = 0
 extern const XComparisonResult XCompareEqualTo;
+
+// > 0
 extern const XComparisonResult XCompareGreaterThan;
 
 #pragma mark - XByte
@@ -358,36 +329,36 @@ static inline void XByte128Reset(XByte128 * _Nonnull bytes, const uint8_t * _Non
 
 
 
-typedef enum {
-    XTypeVoid = 0x0,
-    XTypeBool = 0x1,
-    XTypeSInt8 = 0x2,
-    XTypeUInt8 = 0x3,
-    XTypeSInt16 = 0x4,
-    XTypeUInt16 = 0x5,
-    XTypeSInt32 = 0x6,
-    XTypeUInt32 = 0x7,
-    XTypeSInt64 = 0x8,
-    XTypeUInt64 = 0x9,
-    XTypeFloat32 = 0xA,
-    XTypeFloat64 = 0xB,
-    XTypeRef = 0xC,
-
-    
-    XTypeVoidPtr = 0x10,
-    XTypeBoolPtr = 0x11,
-    XTypeSInt8Ptr = 0x12,
-    XTypeUInt8Ptr = 0x13,
-    XTypeSInt16Ptr = 0x14,
-    XTypeUInt16Ptr = 0x15,
-    XTypeSInt32Ptr = 0x16,
-    XTypeUInt32Ptr = 0x17,
-    XTypeSInt64Ptr = 0x18,
-    XTypeUInt64Ptr = 0x19,
-    XTypeFloat32Ptr = 0x1A,
-    XTypeFloat64Ptr = 0x1B,
-    XTypeRefPtr = 0x1C,
-} XTypeId_e;
+//typedef enum {
+//    XTypeVoid = 0x0,
+//    XTypeBool = 0x1,
+//    XTypeSInt8 = 0x2,
+//    XTypeUInt8 = 0x3,
+//    XTypeSInt16 = 0x4,
+//    XTypeUInt16 = 0x5,
+//    XTypeSInt32 = 0x6,
+//    XTypeUInt32 = 0x7,
+//    XTypeSInt64 = 0x8,
+//    XTypeUInt64 = 0x9,
+//    XTypeFloat32 = 0xA,
+//    XTypeFloat64 = 0xB,
+//    XTypeRef = 0xC,
+//
+//
+//    XTypeVoidPtr = 0x10,
+//    XTypeBoolPtr = 0x11,
+//    XTypeSInt8Ptr = 0x12,
+//    XTypeUInt8Ptr = 0x13,
+//    XTypeSInt16Ptr = 0x14,
+//    XTypeUInt16Ptr = 0x15,
+//    XTypeSInt32Ptr = 0x16,
+//    XTypeUInt32Ptr = 0x17,
+//    XTypeSInt64Ptr = 0x18,
+//    XTypeUInt64Ptr = 0x19,
+//    XTypeFloat32Ptr = 0x1A,
+//    XTypeFloat64Ptr = 0x1B,
+//    XTypeRefPtr = 0x1C,
+//} XTypeId_e;
 
 //typedef enum {
 //    XTypeNone = 0,

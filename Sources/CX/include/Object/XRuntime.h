@@ -14,6 +14,41 @@ extern "C" {
 
 #include "XType.h"
 
+
+typedef void * XRef;
+
+typedef XRef XHeapRef;
+typedef XRef XStackRef;
+
+
+//描述一个对象的类型，以及对象方法的指针列表
+typedef XRef XClass;
+
+//静态常量
+typedef XRef XNull;
+typedef XRef XBoolean;
+
+//不可变value类型， 默认hash是对内容的hash， 比较是对内容的比较
+typedef XRef XNumber;
+typedef XRef XString;
+typedef XRef XData;
+typedef XRef XDate;
+typedef XRef XValue;
+
+//对象类型， 默认hash是对对象地址的hash， 比较是对对象地址的比较
+typedef XRef XPackageRef;
+typedef XRef XWeakPackageRef;
+typedef XRef XArrayRef;
+typedef XRef XMapRef;
+typedef XRef XSetRef;
+
+typedef XRef XObject;
+
+
+
+
+
+
 #pragma mark - ConstantValue
     
 #if CX_TARGET_RT_64_BIT

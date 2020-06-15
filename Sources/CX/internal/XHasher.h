@@ -32,14 +32,5 @@ static inline XUInt64 XSipHasherFinalize(XSipHasher * _Nonnull hasher) {
     return XSipHashFinalize(&(hasher->context));
 }
 
-typedef struct __XMmHasher {
-    XBaseHasher_t base;
-    XSipHashContext context;
-} XMmHasher;
-
-static inline XUInt64 XSipHasherFinalize(XSipHasher * _Nonnull hasher) {
-    return XSipHashFinalize(&(hasher->context));
-}
-
 
 #endif /* XHasher_h */

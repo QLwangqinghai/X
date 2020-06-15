@@ -6,7 +6,7 @@
 //  Copyright © 2020 haoqi. All rights reserved.
 //
 
-#include "include/XType.h"
+#include "include/Base/XType.h"
 
 
 const XComparisonResult XCompareLessThan = -1;

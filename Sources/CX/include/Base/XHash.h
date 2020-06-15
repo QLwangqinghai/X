@@ -12,9 +12,6 @@
 #include "XType.h"
 
 
-
-
-
 extern XHashCode XHashUInt64(XUInt64 i);
 extern XHashCode XHashSInt64(XSInt64 i);
 extern XHashCode XHashFloat64(XFloat64 f);

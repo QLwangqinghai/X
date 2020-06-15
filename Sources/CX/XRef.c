@@ -6,7 +6,7 @@
 //  Copyright © 2020 haoqi. All rights reserved.
 //
 
-#include "include/XRef.h"
+#include "include/Object/XRef.h"
 #include "internal/XRuntimeInternal.h"
 #include "internal/XAllocator.h"
 #include "internal/XClass.h"

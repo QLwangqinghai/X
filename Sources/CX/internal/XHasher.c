@@ -23,9 +23,4 @@ void XSipHasherCombineBytes(XHasher _Nonnull hasher, XUInt8 * _Nullable buffer, 
     XSipHashCompress(&(h->context), buffer, size);
 }
 
-void XSipHasherCombineBytes(XHasher _Nonnull hasher, XUInt8 * _Nullable buffer, XSize size) {
-    XSipHasher * h = (XSipHasher *)hasher;
-    XSipHashCompress(&(h->context), buffer, size);
-}
-
 

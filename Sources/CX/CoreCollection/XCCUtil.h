@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#include "XAtomic.h"
+#include "XType.h"
 
 
 #pragma mark - 环形缓冲区

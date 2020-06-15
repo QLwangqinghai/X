@@ -13,11 +13,7 @@
 extern "C" {
 #endif
 
-#include "XType.h"
-
-
 #include <stdatomic.h>
-
 
 
 #if defined(__cplusplus)

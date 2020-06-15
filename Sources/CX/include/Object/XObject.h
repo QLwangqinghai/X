@@ -16,19 +16,7 @@ extern "C" {
 #include "XType.h"
 
 
-#pragma mark - equalTo
 
-extern XBool XObjectEqual(XRef _Nonnull lhs, XRef _Nonnull rhs);
-
-#pragma mark - hash
-
-extern XHashCode XObjectHash(XRef _Nonnull ref);
-
-
-
-
-
-extern XPtr _Nonnull XPackageGetContent(XObject _Nonnull obj);
 
 
 #if defined(__cplusplus)

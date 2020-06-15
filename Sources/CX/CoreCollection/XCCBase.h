@@ -13,6 +13,7 @@
 extern "C" {
 #endif
 
+#include "XType.h"
 #include "XAtomic.h"
 
 

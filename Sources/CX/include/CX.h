@@ -15,13 +15,12 @@
 
 #include "CXTargetConditionals.h"
 #include "XType.h"
-#include "XObject.h"
 #include "XDevice.h"
 #include "XProcess.h"
 #include "XMemory.h"
-#include "XRef.h"
+
 #include "XObject.h"
-#include "XMemory.h"
+#include "XRef.h"
 
 //#if defined(__cplusplus)
 //}  // extern C
