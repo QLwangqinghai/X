@@ -5,18 +5,11 @@ import PackageDescription
 let package = Package(
 	name: "CX",
     products: [
-        .library(
-            name: "CX",
-            targets: ["CX"]
-        )
+        .library(name: "CX", targets: ["CX"]),
     ],
     dependencies: [],
     targets: [
-        .target(
-            name: "CX",
-            dependencies: [],
-            path: "Sources/CX"
-        )
+        .target(name: "CX", dependencies: [], path: "Sources/CX"),
     ],
     cLanguageStandard: .c11
 )

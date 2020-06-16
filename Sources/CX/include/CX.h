@@ -9,21 +9,18 @@
 #ifndef CX_h
 #define CX_h
 
-//#if defined(__cplusplus)
-//extern "C" {
-//#endif
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-#include "CXTargetConditionals.h"
-#include "XType.h"
-#include "XDevice.h"
-#include "XProcess.h"
-#include "XMemory.h"
+#include "Base/CXTargetConditionals.h"
+#include "Base/XType.h"
+#include "Base/XDevice.h"
+#include "Base/XProcess.h"
+#include "Base/XMemory.h"
 
-#include "XObject.h"
-#include "XRef.h"
-
-//#if defined(__cplusplus)
-//}  // extern C
-//#endif
+#if defined(__cplusplus)
+}  // extern C
+#endif
 
 #endif /* XType_h */
