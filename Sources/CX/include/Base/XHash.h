@@ -11,6 +11,9 @@
 
 #include "XType.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 extern XHashCode XHashUInt64(XUInt64 i);
 extern XHashCode XHashSInt64(XSInt64 i);
@@ -57,5 +60,11 @@ extern void XSipHashInitWithState(XSipHashContext * _Nonnull context, const XSip
 
 extern void XSipHashCompress(XSipHashContext * _Nonnull context, const XUInt8 * _Nonnull bytes, XUInt64 length);
 extern XUInt64 XSipHashFinalize(XSipHashContext * _Nonnull context);
+
+
+#if defined(__cplusplus)
+}  // extern C
+#endif
+
 
 #endif /* XHash_h */

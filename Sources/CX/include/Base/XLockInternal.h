@@ -9,6 +9,10 @@
 #ifndef XLock_h
 #define XLock_h
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "XType.h"
 
 
@@ -44,6 +48,8 @@ extern XSpinlockTable_s * _Nonnull XSpinlockTableCreate(XUInt capacity);
 extern void XSpinlockTableDestroy(XSpinlockTable_s * _Nonnull table);
 extern XSpinlock_t * _Nonnull XSpinlockTableGet(XSpinlockTable_s * _Nonnull table, XIndex idx);
 
-
+#if defined(__cplusplus)
+}  // extern C
+#endif
 
 #endif /* XLock_h */

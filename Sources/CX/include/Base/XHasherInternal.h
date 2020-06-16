@@ -9,6 +9,10 @@
 #ifndef XHasher_h
 #define XHasher_h
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "XType.h"
 #include "XHash.h"
 
@@ -31,5 +35,8 @@ static inline XUInt64 XSipHasherFinalize(XSipHasher * _Nonnull hasher) {
     return XSipHashFinalize(&(hasher->context));
 }
 
+#if defined(__cplusplus)
+}  // extern C
+#endif
 
 #endif /* XHasher_h */

@@ -590,7 +590,7 @@ unsigned int hash_JSHash(unsigned char *str){
     return hash;
 }
 
-unsigned int hash_DEKHash(unsigned char *str){
+unsigned int hash_DEKHash(const char *str){
     unsigned int hash = strlen(str);
     while(*str){
         hash = ((hash << 5) ^ (hash >> 27)) ^ (*str++);

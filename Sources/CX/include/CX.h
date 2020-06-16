@@ -13,11 +13,7 @@
 extern "C" {
 #endif
 
-#include "Base/CXTargetConditionals.h"
-#include "Base/XType.h"
-#include "Base/XDevice.h"
-#include "Base/XProcess.h"
-#include "Base/XMemory.h"
+#include "Base/XBase.h"
 
 #if defined(__cplusplus)
 }  // extern C
