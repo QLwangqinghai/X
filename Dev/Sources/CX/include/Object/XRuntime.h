@@ -62,8 +62,6 @@ typedef XRef XObject;
 #endif
 
 
-typedef XPtr XHasher;
-
 typedef XPtr _XDescriptionBuffer;
 typedef XComparisonResult (*XRefCompare_f)(XRef _Nonnull lhs, XRef _Nonnull rhs);
 

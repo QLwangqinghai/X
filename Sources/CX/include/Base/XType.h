@@ -158,6 +158,9 @@ typedef void * XPtr;
 
 typedef XUInt XHashCode;
 
+typedef XPtr XHasher;
+
+
 #pragma mark - XTimeInterval
 
 //微秒时间
