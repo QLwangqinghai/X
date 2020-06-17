@@ -8,8 +8,15 @@
 
 #import "OC.h"
 #import <CoreServices/CoreServices.h>
+#include <pthread.h>
+
+#include <tar.h>
 
 
 @implementation OC
+
++ (void)t {
+    TSGID;
+}
 
 @end

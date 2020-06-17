@@ -19,6 +19,7 @@
 		D66E051C2499215C00B1A91D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D66E051B2499215C00B1A91D /* Assets.xcassets */; };
 		D66E051F2499215C00B1A91D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D66E051D2499215C00B1A91D /* LaunchScreen.storyboard */; };
 		D66E05272499219700B1A91D /* OC.m in Sources */ = {isa = PBXBuildFile; fileRef = D66E05262499219700B1A91D /* OC.m */; };
+		D6C74BEA249A6A8B000326C5 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D6C74BE9249A6A8B000326C5 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		D66E05242499219700B1A91D /* UTI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTI-Bridging-Header.h"; sourceTree = "<group>"; };
 		D66E05252499219700B1A91D /* OC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OC.h; sourceTree = "<group>"; };
 		D66E05262499219700B1A91D /* OC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OC.m; sourceTree = "<group>"; };
+		D6C74BE9249A6A8B000326C5 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6C74BEA249A6A8B000326C5 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +72,7 @@
 				77C7F57C24699A7600B7EC3C /* Demo */,
 				D66E05112499215A00B1A91D /* UTI */,
 				77C7F57B24699A7600B7EC3C /* Products */,
+				D6C74BE8249A6A8B000326C5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +116,14 @@
 				D66E05242499219700B1A91D /* UTI-Bridging-Header.h */,
 			);
 			path = UTI;
+			sourceTree = "<group>";
+		};
+		D6C74BE8249A6A8B000326C5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D6C74BE9249A6A8B000326C5 /* libz.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
