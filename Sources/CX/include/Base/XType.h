@@ -55,6 +55,34 @@ typedef int16_t XSInt16;
 typedef int32_t XSInt32;
 typedef int64_t XSInt64;
 
+#if CX_TARGET_RT_64_BIT
+typedef __uint128_t XUInt128;
+typedef __int128_t XSInt128;
+
+#define XSInt128Min  ((__int128_t)0 - ((__int128_t)1 << 126) - ((__int128_t)1 << 126))
+#define XSInt128Max  ((__int128_t)-1 + ((__int128_t)1 << 126) + ((__int128_t)1 << 126))
+#define XUInt128Max (((__uint128_t)1 << 127) - (__uint128_t)1 + ((__uint128_t)1 << 127))
+
+#endif
+
+#if CX_TARGET_RT_64_BIT
+
+typedef XUInt128 XLargeSize_t;
+
+#else
+
+typedef struct {
+#if CX_TARGET_RT_BIG_ENDIAN
+    XUInt64 high;
+    XUInt64 low;
+#else
+    XUInt64 low;
+    XUInt64 high;
+#endif
+} XLargeSize_t;
+
+#endif
+
 typedef float XFloat32;
 typedef double XFloat64;
 
