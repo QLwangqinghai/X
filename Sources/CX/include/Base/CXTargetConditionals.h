@@ -291,7 +291,6 @@ defined (BIT_ZERO_ON_LEFT) || defined(m68k) || defined(__sparc)
 #elif defined(__wasm__)
     #define CX_TARGET_RT_64_BIT 0
     #define CX_TARGET_RT_32_BIT 1
-
 #elif defined(__asmjs__)
     #define CX_TARGET_RT_64_BIT 0
     #define CX_TARGET_RT_32_BIT 1
