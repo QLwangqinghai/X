@@ -122,8 +122,12 @@ typedef intptr_t XSIntptr;
     #define X_BUILD_UInt(value) UINT32_C(value)
 
 #endif
-    
 
+#if CX_TARGET_OS_WINDOWS
+
+#else
+
+#endif
     
 
 typedef XUInt XIndex;
