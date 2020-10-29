@@ -14,22 +14,22 @@
 #if CX_TARGET_OS_DARWIN
 
 void XSpinlockInit(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     *lock = OS_UNFAIR_LOCK_INIT;
 }
 void XSpinlockDeinit(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
 }
 void XSpinlockLock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     os_unfair_lock_lock(lock);
 }
 void XSpinlockUnlock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     os_unfair_lock_unlock(lock);
 }
 XBool XSpinlockTrylock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     return os_unfair_lock_trylock(lock);
 }
 
@@ -38,23 +38,23 @@ XBool XSpinlockTrylock(XSpinlock_t * _Nonnull lock) {
 #if CX_TARGET_OS_LINUX
 
 void XSpinlockInit(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     XAssert(0 == pthread_spin_init(lock, PTHREAD_PROCESS_PRIVATE), __func__, "");
 }
 void XSpinlockDeinit(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     XAssert(0 == pthread_spin_destroy(lock), __func__, "");
 }
 void XSpinlockLock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     XAssert(0 == pthread_spin_lock(lock), __func__, "");
 }
 void XSpinlockUnlock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     XAssert(0 == pthread_spin_unlock(lock), __func__, "");
 }
 XBool XSpinlockTrylock(XSpinlock_t * _Nonnull lock) {
-    XAssert(NULL != lock, __func__, "");
+    XAssert(NULL != lock, "");
     return 0 == pthread_spin_unlock(lock);
 }
 
@@ -76,7 +76,7 @@ void XSpinlockTableDestroy(XSpinlockTable_s * _Nonnull table) {
     XDeallocate(table);
 }
 XSpinlock_t * _Nonnull XSpinlockTableGet(XSpinlockTable_s * _Nonnull table, XIndex idx) {
-    XAssert(NULL != table, __func__, "");
-    XAssert(idx < table->capacity, __func__, "");
+    XAssert(NULL != table, "");
+    XAssert(idx < table->capacity, "");
     return &(table->table[idx]);
 }

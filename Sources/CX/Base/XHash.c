@@ -222,7 +222,7 @@ uint64_t __XMurmurHash64_rt32(const void * _Nonnull key, uint32_t len, uint32_t 
 
 XUInt32 XMurmurHash32(const XPtr _Nonnull key, XUInt32 len, XUInt32 seed) {
     if (len > 0) {
-        XAssert(NULL != key, __func__, "key null");
+        XAssert(NULL != key, "key null");
     }
     return __XMurmurHash32(key, len, seed);
 }
@@ -230,7 +230,7 @@ XUInt32 XMurmurHash32(const XPtr _Nonnull key, XUInt32 len, XUInt32 seed) {
 // 64-bit hash for 64-bit platforms
 XUInt64 XMurmurHash64(const XPtr _Nonnull key, XUInt len, XUInt32 seed) {
     if (len > 0) {
-        XAssert(NULL != key, __func__, "key null");
+        XAssert(NULL != key, "key null");
     }
 
 #if CX_TARGET_RT_64_BIT
@@ -736,8 +736,8 @@ static inline void __XSipHashCompress(uint64_t v[4], XUInt64 m) {
 }
 
 void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) {
-    XAssert(NULL != state, __func__, "");
-    XAssert(NULL != key, __func__, "");
+    XAssert(NULL != state, "");
+    XAssert(NULL != key, "");
 
     return __XSipHashStateInit(state, key);
 }
@@ -745,9 +745,9 @@ void XSipHashStateInit(XSipHashState * _Nonnull state, XUInt64 key[_Nonnull 2]) 
 
 
 XUInt64 XSipHash(const XSipHashState * _Nonnull state, const XUInt8 * _Nonnull bytes, XUInt64 length) {
-    XAssert(NULL != state, __func__, "");
+    XAssert(NULL != state, "");
     if (length > 0) {
-        XAssert(NULL != bytes, __func__, "");
+        XAssert(NULL != bytes, "");
     }
     const XUInt64 orig_input_len = length;
     uint64_t v[4] = {};
@@ -788,8 +788,8 @@ XUInt64 XSipHash(const XSipHashState * _Nonnull state, const XUInt8 * _Nonnull b
 
 
 void XSipHashInit(XSipHashContext * _Nonnull context, XUInt64 key[_Nonnull 2]) {
-    XAssert(NULL != context, __func__, "");
-    XAssert(NULL != key, __func__, "");
+    XAssert(NULL != context, "");
+    XAssert(NULL != key, "");
 
     __XSipHashStateInit(&(context->state), key);
     context->length = 0;
@@ -798,17 +798,17 @@ void XSipHashInit(XSipHashContext * _Nonnull context, XUInt64 key[_Nonnull 2]) {
 
 
 void XSipHashInitWithState(XSipHashContext * _Nonnull context, const XSipHashState * _Nonnull state) {
-    XAssert(NULL != context, __func__, "");
-    XAssert(NULL != state, __func__, "");
+    XAssert(NULL != context, "");
+    XAssert(NULL != state, "");
     memcpy(&(context->state), state, sizeof(XSipHashState));
     context->length = 0;
     context->pendingBlock.word = 0;
 }
 
 void XSipHashCompress(XSipHashContext * _Nonnull context, const XUInt8 * _Nonnull bytes, XUInt64 length) {
-    XAssert(NULL != context, __func__, "");
+    XAssert(NULL != context, "");
     if (length > 0) {
-        XAssert(NULL != bytes, __func__, "");
+        XAssert(NULL != bytes, "");
     } else {
         return;
     }
@@ -846,7 +846,7 @@ void XSipHashCompress(XSipHashContext * _Nonnull context, const XUInt8 * _Nonnul
 }
 
 XUInt64 XSipHashFinalize(XSipHashContext * _Nonnull context) {
-    XAssert(NULL != context, __func__, "");
+    XAssert(NULL != context, "");
     uint64_t * v = context->state.v;
 
     XUInt64 plen = context->length & 0x7;

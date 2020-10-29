@@ -70,12 +70,12 @@ static inline XComparisonResult _XMemoryCompare(const XPtr _Nonnull lhs, const X
 }
 
 XComparisonResult XMemoryCompare(const XPtr _Nonnull lhs, const XPtr _Nonnull rhs, XSize size) {
-    XAssert(size >= 0, __func__, "size error");
+    XAssert(size >= 0, "size error");
     if (size == 0) {
         return XCompareEqualTo;
     } else {//size > 0
-        XAssert(NULL != lhs, __func__, "lhs NULL error");
-        XAssert(NULL != rhs, __func__, "rhs NULL error");
+        XAssert(NULL != lhs, "lhs NULL error");
+        XAssert(NULL != rhs, "rhs NULL error");
         if (lhs == rhs) {
             return XCompareEqualTo;
         }

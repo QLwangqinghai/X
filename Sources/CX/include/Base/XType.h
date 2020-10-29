@@ -35,9 +35,9 @@ extern "C" {
 #endif
 #include "CXTargetConditionals.h"
 
-#define XAssert(cond, func, desc) {\
+#define XAssert(cond, desc) {\
     if (!(cond)) {\
-        fprintf(stderr, "%s error, %s\n", func, desc);\
+        fprintf(stderr, "%s error, %s\n", __func__, desc);\
         abort();\
     }\
 }
@@ -153,7 +153,7 @@ static inline XRange XRangeMake(XIndex location, XIndex length) {
 
 //向前移动
 static inline XRange XRangeMoveForward(XRange range, XIndex n) {
-    XAssert(range.location >= n, __func__, "");
+    XAssert(range.location >= n, "");
     XRange r = {
         .location = range.location - n,
         .length = range.length,
@@ -162,7 +162,7 @@ static inline XRange XRangeMoveForward(XRange range, XIndex n) {
 }
 //向后移动
 static inline XRange XRangeMoveBackward(XRange range, XIndex n) {
-    XAssert(range.location + n >= range.location, __func__, "");
+    XAssert(range.location + n >= range.location, "");
     XRange r = {
         .location = range.location + n,
         .length = range.length,
