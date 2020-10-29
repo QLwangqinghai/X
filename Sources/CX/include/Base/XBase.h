@@ -18,6 +18,7 @@ extern "C" {
 #include "XDevice.h"
 #include "XProcess.h"
 #include "XMemory.h"
+#include "XInteger.h"
 
 
 #if defined(__cplusplus)
